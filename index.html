@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glassmorphism Yapılacaklar Listesi</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="background-animation">
+        <div class="bubble bubble-1"></div>
+        <div class="bubble bubble-2"></div>
+        <div class="bubble bubble-3"></div>
+        <div class="bubble bubble-4"></div>
+        <div class="bubble bubble-5"></div>
+    </div>
+
+    <div class="container">
+        <header class="glass-card header">
+            <h1><i class="fas fa-tasks"></i> Yapılacaklar Listesi</h1>
+            <p>Glassmorphism tasarımlı modern görev yöneticisi</p>
+        </header>
+
+        <main class="main-content">
+            <section class="glass-card todo-input-section">
+                <div class="input-group">
+                    <input type="text" id="todoInput" placeholder="Yeni görev ekleyin..." maxlength="100">
+                    <button id="addBtn" class="add-btn">
+                        <i class="fas fa-plus"></i>
+                        Ekle
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all">
+                        <i class="fas fa-list"></i> Tümü
+                    </button>
+                    <button class="filter-btn" data-filter="active">
+                        <i class="fas fa-clock"></i> Aktif
+                    </button>
+                    <button class="filter-btn" data-filter="completed">
+                        <i class="fas fa-check"></i> Tamamlanan
+                    </button>
+                </div>
+            </section>
+
+            <section class="glass-card todo-list-section">
+                <div class="todo-stats">
+                    <span class="total-tasks">Toplam: <span id="totalCount">0</span></span>
+                    <span class="completed-tasks">Tamamlanan: <span id="completedCount">0</span></span>
+                    <button id="clearCompleted" class="clear-btn">
+                        <i class="fas fa-trash"></i> Tamamlananları Temizle
+                    </button>
+                </div>
+                
+                <ul id="todoList" class="todo-list">
+                    <!-- Görevler dinamik olarak buraya eklenecek -->
+                </ul>
+                
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>Henüz görev yok</h3>
+                    <p>Yukarıdan yeni bir görev ekleyebilirsiniz</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="glass-card footer">
+            <p>&copy; 2024 Glassmorphism Todo App - Modern ve şık görev yöneticisi</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
