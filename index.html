@@ -6,6 +6,7 @@
     <title>Glassmorphism Yapılacaklar Listesi</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
     <div class="background-animation">
@@ -26,6 +27,24 @@
             <section class="glass-card todo-input-section">
                 <div class="input-group">
                     <input type="text" id="todoInput" placeholder="Yeni görev ekleyin..." maxlength="100">
+                    <select id="categorySelect" class="category-select">
+                        <option value="genel">📋 Genel</option>
+                        <option value="is">💼 İş</option>
+                        <option value="kisisel">👤 Kişisel</option>
+                        <option value="acil">🚨 Acil</option>
+                        <option value="alısveris">🛒 Alışveriş</option>
+                        <option value="saglik">🏥 Sağlık</option>
+                        <option value="egitim">📚 Eğitim</option>
+                    </select>
+                    <select id="prioritySelect" class="priority-select">
+                        <option value="orta">📄 Orta Öncelik</option>
+                        <option value="yuksek">🔴 Yüksek Öncelik</option>
+                        <option value="dusuk">🟢 Düşük Öncelik</option>
+                    </select>
+                    <div class="date-input-group">
+                        <label for="dueDateInput" class="date-label">📅</label>
+                        <input type="date" id="dueDateInput" class="date-input" title="Son tarih (opsiyonel)">
+                    </div>
                     <button id="addBtn" class="add-btn">
                         <i class="fas fa-plus"></i>
                         Ekle
@@ -33,15 +52,34 @@
                 </div>
                 
                 <div class="filters">
-                    <button class="filter-btn active" data-filter="all">
-                        <i class="fas fa-list"></i> Tümü
-                    </button>
-                    <button class="filter-btn" data-filter="active">
-                        <i class="fas fa-clock"></i> Aktif
-                    </button>
-                    <button class="filter-btn" data-filter="completed">
-                        <i class="fas fa-check"></i> Tamamlanan
-                    </button>
+                    <div class="filter-group">
+                        <label class="filter-label">Durum:</label>
+                        <button class="filter-btn active" data-filter="all">
+                            <i class="fas fa-list"></i> Tümü
+                        </button>
+                        <button class="filter-btn" data-filter="active">
+                            <i class="fas fa-clock"></i> Aktif
+                        </button>
+                        <button class="filter-btn" data-filter="completed">
+                            <i class="fas fa-check"></i> Tamamlanan
+                        </button>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label class="filter-label">Kategori:</label>
+                        <button class="filter-btn category-filter active" data-category="all">
+                            <i class="fas fa-th"></i> Tüm Kategoriler
+                        </button>
+                        <button class="filter-btn category-filter" data-category="is">
+                            💼 İş
+                        </button>
+                        <button class="filter-btn category-filter" data-category="kisisel">
+                            👤 Kişisel
+                        </button>
+                        <button class="filter-btn category-filter" data-category="acil">
+                            🚨 Acil
+                        </button>
+                    </div>
                 </div>
             </section>
 

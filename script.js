@@ -3,13 +3,29 @@ class TodoManager {
     constructor() {
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
+        this.currentCategory = 'all';
         this.editingId = null;
+        this.categories = {
+            'genel': { icon: '📋', name: 'Genel', color: '#667eea' },
+            'is': { icon: '💼', name: 'İş', color: '#4facfe' },
+            'kisisel': { icon: '👤', name: 'Kişisel', color: '#43e97b' },
+            'acil': { icon: '🚨', name: 'Acil', color: '#fa709a' },
+            'alısveris': { icon: '🛒', name: 'Alışveriş', color: '#ffa726' },
+            'saglik': { icon: '🏥', name: 'Sağlık', color: '#ef5350' },
+            'egitim': { icon: '📚', name: 'Eğitim', color: '#ab47bc' }
+        };
+        this.priorities = {
+            'yuksek': { icon: '🔴', name: 'Yüksek', color: '#ff4757', order: 1 },
+            'orta': { icon: '📄', name: 'Orta', color: '#ffa726', order: 2 },
+            'dusuk': { icon: '🟢', name: 'Düşük', color: '#2ed573', order: 3 }
+        };
         this.init();
     }
 
     // Başlangıç fonksiyonu
     init() {
         this.bindEvents();
+        this.initSortable();
         this.render();
         this.updateStats();
     }
@@ -22,9 +38,14 @@ class TodoManager {
             if (e.key === 'Enter') this.addTodo();
         });
 
-        // Filtre butonları
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        // Durum filtre butonları
+        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
+        });
+
+        // Kategori filtre butonları
+        document.querySelectorAll('.category-filter').forEach(btn => {
+            btn.addEventListener('click', (e) => this.setCategoryFilter(e.target.dataset.category));
         });
 
         // Tamamlananları temizle
@@ -33,6 +54,63 @@ class TodoManager {
         // Todo listesi event delegation
         document.getElementById('todoList').addEventListener('click', (e) => this.handleTodoClick(e));
         document.getElementById('todoList').addEventListener('change', (e) => this.handleTodoChange(e));
+    }
+
+    // Drag & Drop sıralama başlat
+    initSortable() {
+        const todoList = document.getElementById('todoList');
+        
+        if (typeof Sortable !== 'undefined') {
+            this.sortable = Sortable.create(todoList, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'sortable-chosen',
+                dragClass: 'sortable-drag',
+                handle: '.drag-handle',
+                onEnd: (evt) => {
+                    this.handleSortEnd(evt);
+                },
+                onStart: (evt) => {
+                    this.showNotification('Görev sürükleniyor...', 'info');
+                }
+            });
+        }
+    }
+
+    // Sıralama bittiğinde çalışacak fonksiyon
+    handleSortEnd(evt) {
+        const oldIndex = evt.oldIndex;
+        const newIndex = evt.newIndex;
+        
+        if (oldIndex === newIndex) return;
+        
+        // Mevcut filtrelenmiş todos'u al
+        const filteredTodos = this.getFilteredTodos();
+        
+        // Hareket edilen elemanı bul
+        const movedTodo = filteredTodos[oldIndex];
+        
+        // Ana todos dizisinden elemanın pozisyonunu bul
+        const todoIndex = this.todos.findIndex(t => t.id === movedTodo.id);
+        
+        // Ana dizinden elemanı çıkar
+        const [todo] = this.todos.splice(todoIndex, 1);
+        
+        // Yeni pozisyonu hesapla
+        let targetIndex;
+        if (newIndex === 0) {
+            targetIndex = 0;
+        } else {
+            const targetTodo = filteredTodos[newIndex - (newIndex > oldIndex ? 0 : 1)];
+            targetIndex = this.todos.findIndex(t => t.id === targetTodo.id);
+            if (newIndex > oldIndex) targetIndex++;
+        }
+        
+        // Yeni pozisyona ekle
+        this.todos.splice(targetIndex, 0, todo);
+        
+        this.saveTodos();
+        this.showNotification('Görev sırası güncellendi!', 'success');
     }
 
     // Yeni görev ekle
@@ -50,9 +128,19 @@ class TodoManager {
             return;
         }
 
+        const categorySelect = document.getElementById('categorySelect');
+        const prioritySelect = document.getElementById('prioritySelect');
+        const dueDateInput = document.getElementById('dueDateInput');
+        const category = categorySelect.value;
+        const priority = prioritySelect.value;
+        const dueDate = dueDateInput.value;
+        
         const todo = {
             id: Date.now(),
             text: text,
+            category: category,
+            priority: priority,
+            dueDate: dueDate || null,
             completed: false,
             createdAt: new Date().toLocaleDateString('tr-TR'),
             createdTime: new Date().toLocaleTimeString('tr-TR', { 
@@ -67,6 +155,7 @@ class TodoManager {
         this.updateStats();
         
         input.value = '';
+        dueDateInput.value = '';
         input.focus();
         
         this.showNotification('Görev başarıyla eklendi!', 'success');
@@ -123,10 +212,23 @@ class TodoManager {
         this.currentFilter = filter;
         
         // Aktif filtre butonunu güncelle
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
             btn.classList.remove('active');
         });
         document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        
+        this.render();
+    }
+
+    // Kategori filtresi ayarla
+    setCategoryFilter(category) {
+        this.currentCategory = category;
+        
+        // Aktif kategori filtre butonunu güncelle
+        document.querySelectorAll('.category-filter').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-category="${category}"]`).classList.add('active');
         
         this.render();
     }
@@ -151,14 +253,31 @@ class TodoManager {
 
     // Filtrelenmiş todoları getir
     getFilteredTodos() {
+        let filtered = this.todos;
+        
+        // Durum filtresini uygula
         switch (this.currentFilter) {
             case 'active':
-                return this.todos.filter(t => !t.completed);
+                filtered = filtered.filter(t => !t.completed);
+                break;
             case 'completed':
-                return this.todos.filter(t => t.completed);
-            default:
-                return this.todos;
+                filtered = filtered.filter(t => t.completed);
+                break;
         }
+        
+        // Kategori filtresini uygula
+        if (this.currentCategory !== 'all') {
+            filtered = filtered.filter(t => t.category === this.currentCategory);
+        }
+        
+        // Öncelik sırasına göre sırala (yüksek öncelik üstte)
+        filtered.sort((a, b) => {
+            const priorityA = this.priorities[a.priority || 'orta'].order;
+            const priorityB = this.priorities[b.priority || 'orta'].order;
+            return priorityA - priorityB;
+        });
+        
+        return filtered;
     }
 
     // Todo listesini render et
@@ -201,11 +320,27 @@ class TodoManager {
 
         emptyState.classList.add('hidden');
 
-        todoList.innerHTML = filteredTodos.map(todo => `
-            <li class="todo-item ${todo.completed ? 'completed' : ''}" data-id="${todo.id}">
+        todoList.innerHTML = filteredTodos.map(todo => {
+            const category = this.categories[todo.category || 'genel'];
+            const priority = this.priorities[todo.priority || 'orta'];
+            return `
+            <li class="todo-item ${todo.completed ? 'completed' : ''} priority-${todo.priority || 'orta'}" data-id="${todo.id}">
+                <div class="drag-handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
                 <div class="todo-checkbox ${todo.completed ? 'checked' : ''}" data-id="${todo.id}">
                 </div>
+                <div class="todo-priority" title="${priority.name} Öncelik">
+                    ${priority.icon}
+                </div>
+                <div class="todo-category" title="${category.name}">
+                    ${category.icon}
+                </div>
                 <div class="todo-text ${todo.completed ? 'completed' : ''}">${this.escapeHtml(todo.text)}</div>
+                ${todo.dueDate ? `<div class="todo-due-date ${this.isDueDateOverdue(todo.dueDate) && !todo.completed ? 'overdue' : ''}" title="Son tarih: ${this.formatDueDate(todo.dueDate)}">
+                    <i class="fas fa-calendar-alt"></i>
+                    ${this.formatDueDate(todo.dueDate)}
+                </div>` : ''}
                 <div class="todo-actions">
                     <button class="todo-btn edit-btn" data-action="edit" data-id="${todo.id}" title="Düzenle">
                         <i class="fas fa-edit"></i>
@@ -214,8 +349,14 @@ class TodoManager {
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-            </li>
-        `).join('');
+            </li>`;
+        }).join('');
+        
+        // Sortable'ı yeniden başlat (DOM güncellendiği için)
+        if (this.sortable) {
+            this.sortable.destroy();
+        }
+        this.initSortable();
     }
 
     // İstatistikleri güncelle
@@ -258,6 +399,42 @@ class TodoManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // Due date formatla
+    formatDueDate(dateString) {
+        const date = new Date(dateString);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        
+        // Sadece tarihi karşılaştır, saati ignore et
+        const dueDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        const tomorrowOnly = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate());
+        
+        if (dueDateOnly.getTime() === todayOnly.getTime()) {
+            return 'Bugün';
+        } else if (dueDateOnly.getTime() === tomorrowOnly.getTime()) {
+            return 'Yarın';
+        } else {
+            return date.toLocaleDateString('tr-TR', { 
+                day: 'numeric', 
+                month: 'short' 
+            });
+        }
+    }
+
+    // Due date geçmiş mi kontrolü
+    isDueDateOverdue(dateString) {
+        const dueDate = new Date(dateString);
+        const today = new Date();
+        
+        // Sadece tarihi karşılaştır
+        const dueDateOnly = new Date(dueDate.getFullYear(), dueDate.getMonth(), dueDate.getDate());
+        const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        
+        return dueDateOnly < todayOnly;
     }
 
     // Local storage'a kaydet

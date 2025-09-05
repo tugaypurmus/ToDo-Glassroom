@@ -140,6 +140,103 @@ body {
     display: flex;
     gap: 15px;
     align-items: center;
+    flex-wrap: wrap;
+}
+
+.category-select {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.category-select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+.category-select option {
+    background: rgba(102, 126, 234, 0.9);
+    color: white;
+    padding: 10px;
+}
+
+.priority-select {
+    padding: 15px 20px;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 170px;
+}
+
+.priority-select:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: scale(1.02);
+}
+
+.priority-select option {
+    background: rgba(102, 126, 234, 0.9);
+    color: white;
+    padding: 10px;
+}
+
+.date-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    padding: 10px 20px;
+    transition: all 0.3s ease;
+}
+
+.date-input-group:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.02);
+}
+
+.date-label {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+}
+
+.date-input {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    min-width: 140px;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+}
+
+.date-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
 }
 
 #todoInput {
@@ -193,9 +290,24 @@ body {
 /* Filtre Butonları */
 .filters {
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filter-group {
+    display: flex;
     gap: 10px;
-    justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 600;
+    margin-right: 10px;
+    min-width: 60px;
 }
 
 .filter-btn {
@@ -301,6 +413,40 @@ body {
     gap: 15px;
     transition: all 0.3s ease;
     animation: slideIn 0.3s ease;
+    cursor: grab;
+}
+
+.todo-item:active {
+    cursor: grabbing;
+}
+
+.todo-item.sortable-drag {
+    opacity: 0.8;
+    transform: rotate(5deg);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+}
+
+.todo-item.sortable-ghost {
+    opacity: 0.4;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.drag-handle {
+    color: rgba(255, 255, 255, 0.5);
+    cursor: grab;
+    padding: 5px;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.drag-handle:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
 }
 
 .todo-item:hover {
@@ -342,6 +488,73 @@ body {
     color: white;
     font-size: 12px;
     font-weight: bold;
+}
+
+.todo-category {
+    font-size: 20px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.todo-category:hover {
+    opacity: 1;
+}
+
+.todo-priority {
+    font-size: 16px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.todo-priority:hover {
+    opacity: 1;
+}
+
+.priority-yuksek {
+    border-left: 4px solid #ff4757;
+}
+
+.priority-orta {
+    border-left: 4px solid #ffa726;
+}
+
+.priority-dusuk {
+    border-left: 4px solid #2ed573;
+}
+
+.todo-due-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 8px;
+    border-radius: 12px;
+    margin-right: 10px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.todo-due-date i {
+    font-size: 10px;
+}
+
+.todo-due-date.overdue {
+    background: rgba(255, 71, 87, 0.3);
+    color: #ff4757;
+    border: 1px solid rgba(255, 71, 87, 0.5);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
 .todo-text {
