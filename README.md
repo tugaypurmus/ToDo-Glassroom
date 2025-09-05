@@ -85,7 +85,12 @@ Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir y
 ### Klavye Kısayolları
 - `Ctrl/Cmd + Enter`: Yeni görev ekleme moduna geç
 - `Enter`: Görev ekle (input aktifken)
-- `Escape`: Input'u temizle
+- `Ctrl/Cmd + D`: Detaylı görev ekleme modalı
+- `Ctrl/Cmd + M`: Mobil görünüm moduna geç
+- `Ctrl/Cmd + Shift + D`: Desktop görünüm moduna geç
+- `Ctrl/Cmd + R`: Otomatik (responsive) görünüm modu
+- `Escape`: Input'u temizle veya modal kapat
+- `F1` veya `?`: Kısayol tuşları yardımını göster
 
 ## 🛠️ Teknik Detaylar
 
@@ -153,14 +158,17 @@ ToDo-Glassroom/
 - **JavaScript**: ~15KB
 - **Toplam**: ~31KB (gzipped: ~11KB)
 
-## ✅ Tamamlanan Özellikler (v1.4)
+## ✅ Tamamlanan Özellikler (v1.5)
 
 - [x] **Desktop Mode**: Otomatik responsive sidebar navigasyon
+- [x] **Görünüm Seçici**: Manuel Desktop/Mobile/Auto mod seçimi
 - [x] **Kategori Sistemi**: 6 farklı kategori desteği
 - [x] **Due Date**: Tarih ekleme ve overdue detection
 - [x] **Drag & Drop**: SortableJS ile görev sıralama
 - [x] **Smart UI**: Compact interface ve modal sistem
-- [x] **Klavye Kısayolları**: Otomatik yardım paneli
+- [x] **Klavye Kısayolları**: Otomatik yardım paneli ve görünüm kısayolları
+- [x] **Kalıcı Ayarlar**: Görünüm modu localStorage'da saklanıyor
+- [x] **Beyaz Header**: Header metinleri beyaz renkte
 
 ## 🔄 Gelecek Özellikler
 

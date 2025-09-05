@@ -1,7 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.5';
+        this.version = 'v1.5.1';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
@@ -983,6 +983,24 @@ document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault();
         window.todoManager.openAdvancedModal();
+    }
+    
+    // Ctrl/Cmd + M: Mobil görünüm
+    if ((e.ctrlKey || e.metaKey) && e.key === 'm') {
+        e.preventDefault();
+        window.todoManager.setViewMode('mobile');
+    }
+    
+    // Ctrl/Cmd + Shift + D: Desktop görünüm
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        window.todoManager.setViewMode('desktop');
+    }
+    
+    // Ctrl/Cmd + R: Otomatik görünüm (Responsive)
+    if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        window.todoManager.setViewMode('auto');
     }
     
     // Esc: Input'u temizle veya modal/shortcuts kapat
