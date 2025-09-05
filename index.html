@@ -24,58 +24,57 @@
         </header>
 
         <main class="main-content">
-            <section class="glass-card todo-input-section">
-                <div class="input-group">
-                    <input type="text" id="todoInput" placeholder="Yeni görev ekleyin..." maxlength="100">
-                    <select id="categorySelect" class="category-select">
-                        <option value="genel">📋 Genel</option>
-                        <option value="is">💼 İş</option>
-                        <option value="kisisel">👤 Kişisel</option>
-                        <option value="acil">🚨 Acil</option>
-                        <option value="alısveris">🛒 Alışveriş</option>
-                        <option value="saglik">🏥 Sağlık</option>
-                        <option value="egitim">📚 Eğitim</option>
-                    </select>
-                    <select id="prioritySelect" class="priority-select">
-                        <option value="orta">📄 Orta Öncelik</option>
-                        <option value="yuksek">🔴 Yüksek Öncelik</option>
-                        <option value="dusuk">🟢 Düşük Öncelik</option>
-                    </select>
-                    <div class="date-input-group">
-                        <label for="dueDateInput" class="date-label">📅</label>
-                        <input type="date" id="dueDateInput" class="date-input" title="Son tarih (opsiyonel)">
-                    </div>
-                    <button id="addBtn" class="add-btn">
-                        <i class="fas fa-plus"></i>
-                        Ekle
+            <!-- Compact Quick Add -->
+            <section class="glass-card quick-add-section">
+                <div class="quick-input">
+                    <input type="text" id="todoInput" placeholder="Bugün ne yapacaksın? ✨" maxlength="100">
+                    <button id="quickAddBtn" class="quick-add-btn">
+                        <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
-                
-                <div class="filters">
-                    <div class="filter-tabs">
-                        <button class="tab-btn active" data-filter="all">Tümü</button>
-                        <button class="tab-btn" data-filter="active">Aktif</button>
-                        <button class="tab-btn" data-filter="completed">Tamamlanan</button>
-                    </div>
-                    
-                    <div class="category-chips">
-                        <button class="chip active" data-category="all">🔧 Tümü</button>
-                        <button class="chip" data-category="is">💼</button>
-                        <button class="chip" data-category="kisisel">👤</button>
-                        <button class="chip" data-category="acil">🚨</button>
-                        <button class="chip" data-category="alısveris">🛒</button>
-                        <button class="chip" data-category="saglik">🏥</button>
-                    </div>
-                </div>
+                <p class="quick-hint">💡 İpucu: Hızlı eklemek için Enter'a bas, detaylar için ⚙️ butonuna tıkla</p>
             </section>
 
             <section class="glass-card todo-list-section">
-                <div class="todo-stats">
-                    <span class="total-tasks">Toplam: <span id="totalCount">0</span></span>
-                    <span class="completed-tasks">Tamamlanan: <span id="completedCount">0</span></span>
-                    <button id="clearCompleted" class="clear-btn">
-                        <i class="fas fa-trash"></i> Tamamlananları Temizle
-                    </button>
+                <div class="list-header">
+                    <div class="list-controls">
+                        <button id="filterToggle" class="control-btn" title="Filtreler">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                        <button id="advancedAdd" class="control-btn" title="Detaylı Ekle">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                        <button id="clearCompleted" class="control-btn danger" title="Tamamlananları Temizle">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="todo-stats">
+                        <span class="stat-item">📋 <span id="totalCount">0</span></span>
+                        <span class="stat-item">✅ <span id="completedCount">0</span></span>
+                    </div>
+                </div>
+                
+                <!-- Collapsible Filters -->
+                <div class="filters-panel" id="filtersPanel">
+                    <div class="filter-row">
+                        <label class="filter-label">Durum:</label>
+                        <div class="filter-group">
+                            <button class="mini-btn active" data-filter="all">Tümü</button>
+                            <button class="mini-btn" data-filter="active">Aktif</button>
+                            <button class="mini-btn" data-filter="completed">✓ Biten</button>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <label class="filter-label">Kategori:</label>
+                        <div class="filter-group">
+                            <button class="category-mini active" data-category="all">🔧</button>
+                            <button class="category-mini" data-category="is">💼</button>
+                            <button class="category-mini" data-category="kisisel">👤</button>
+                            <button class="category-mini" data-category="acil">🚨</button>
+                            <button class="category-mini" data-category="alısveris">🛒</button>
+                            <button class="category-mini" data-category="saglik">🏥</button>
+                        </div>
+                    </div>
                 </div>
                 
                 <ul id="todoList" class="todo-list">
@@ -91,8 +90,58 @@
         </main>
 
         <footer class="glass-card footer">
-            <p>&copy; 2025 Glassmorphism Todo App v1.1 - Modern ve şık görev yöneticisi</p>
+            <p>&copy; 2025 Glassmorphism Todo App v1.2 - Modern ve şık görev yöneticisi</p>
         </footer>
+    </div>
+
+    <!-- Advanced Add Modal -->
+    <div id="advancedModal" class="modal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Detaylı Görev Ekle</h3>
+                <button id="modalClose" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>📝 Görev</label>
+                    <input type="text" id="modalTodoInput" placeholder="Görev açıklaması..." maxlength="100">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📂 Kategori</label>
+                        <select id="modalCategorySelect">
+                            <option value="genel">📋 Genel</option>
+                            <option value="is">💼 İş</option>
+                            <option value="kisisel">👤 Kişisel</option>
+                            <option value="acil">🚨 Acil</option>
+                            <option value="alısveris">🛒 Alışveriş</option>
+                            <option value="saglik">🏥 Sağlık</option>
+                            <option value="egitim">📚 Eğitim</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>⚡ Öncelik</label>
+                        <select id="modalPrioritySelect">
+                            <option value="orta">📄 Orta</option>
+                            <option value="yuksek">🔴 Yüksek</option>
+                            <option value="dusuk">🟢 Düşük</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>📅 Son Tarih</label>
+                    <input type="date" id="modalDueDateInput">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modalCancel" class="btn-secondary">İptal</button>
+                <button id="modalAdd" class="btn-primary">
+                    <i class="fas fa-plus"></i> Ekle
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

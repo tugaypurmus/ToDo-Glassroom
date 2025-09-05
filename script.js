@@ -1,7 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.1';
+        this.version = 'v1.2';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
@@ -33,24 +33,38 @@ class TodoManager {
 
     // Event listener'ları bağla
     bindEvents() {
-        // Görev ekleme
-        document.getElementById('addBtn').addEventListener('click', () => this.addTodo());
+        // Quick Add - Ana görev ekleme
+        document.getElementById('quickAddBtn').addEventListener('click', () => this.quickAddTodo());
         document.getElementById('todoInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addTodo();
+            if (e.key === 'Enter') this.quickAddTodo();
         });
 
-        // Durum filtre butonları
-        document.querySelectorAll('.tab-btn[data-filter]').forEach(btn => {
+        // Control butonları
+        document.getElementById('filterToggle').addEventListener('click', () => this.toggleFilters());
+        document.getElementById('advancedAdd').addEventListener('click', () => this.openAdvancedModal());
+        document.getElementById('clearCompleted').addEventListener('click', () => this.clearCompleted());
+
+        // Modal işlemleri
+        document.getElementById('modalClose').addEventListener('click', () => this.closeModal());
+        document.getElementById('modalCancel').addEventListener('click', () => this.closeModal());
+        document.getElementById('modalAdd').addEventListener('click', () => this.addTodoFromModal());
+
+        // Modal dışına tıklama
+        document.getElementById('advancedModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('advancedModal')) {
+                this.closeModal();
+            }
+        });
+
+        // Compact filter butonları
+        document.querySelectorAll('.mini-btn[data-filter]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
         });
 
         // Kategori filtre butonları
-        document.querySelectorAll('.chip[data-category]').forEach(btn => {
+        document.querySelectorAll('.category-mini[data-category]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setCategoryFilter(e.target.dataset.category));
         });
-
-        // Tamamlananları temizle
-        document.getElementById('clearCompleted').addEventListener('click', () => this.clearCompleted());
 
         // Todo listesi event delegation
         document.getElementById('todoList').addEventListener('click', (e) => this.handleTodoClick(e));
@@ -114,7 +128,64 @@ class TodoManager {
         this.showNotification('Görev sırası güncellendi!', 'success');
     }
 
-    // Yeni görev ekle
+    // Hızlı görev ekleme
+    quickAddTodo() {
+        const input = document.getElementById('todoInput');
+        const text = input.value.trim();
+
+        if (!text) {
+            this.showNotification('Lütfen bir görev giriniz!', 'error');
+            return;
+        }
+
+        if (text.length > 100) {
+            this.showNotification('Görev metni çok uzun! (Max 100 karakter)', 'error');
+            return;
+        }
+
+        // Smart defaults - basit AI benzeri mantık
+        let category = 'genel';
+        let priority = 'orta';
+
+        // Anahtar kelimelerle kategori tahmini
+        const lowercaseText = text.toLowerCase();
+        if (lowercaseText.includes('iş') || lowercaseText.includes('toplantı') || lowercaseText.includes('proje')) {
+            category = 'is';
+        } else if (lowercaseText.includes('alışveriş') || lowercaseText.includes('market') || lowercaseText.includes('satın')) {
+            category = 'alısveris';
+        } else if (lowercaseText.includes('doktor') || lowercaseText.includes('hastane') || lowercaseText.includes('ilaç')) {
+            category = 'saglik';
+        } else if (lowercaseText.includes('acil') || lowercaseText.includes('önemli') || text.includes('!')) {
+            category = 'acil';
+            priority = 'yuksek';
+        }
+
+        const todo = {
+            id: Date.now(),
+            text: text,
+            category: category,
+            priority: priority,
+            dueDate: null,
+            completed: false,
+            createdAt: new Date().toLocaleDateString('tr-TR'),
+            createdTime: new Date().toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            })
+        };
+
+        this.todos.unshift(todo);
+        this.saveTodos();
+        this.render();
+        this.updateStats();
+        
+        input.value = '';
+        input.focus();
+        
+        this.showNotification('Görev hızla eklendi! 🚀', 'success');
+    }
+
+    // Detaylı görev ekleme (eski addTodo)
     addTodo() {
         const input = document.getElementById('todoInput');
         const text = input.value.trim();
@@ -213,10 +284,10 @@ class TodoManager {
         this.currentFilter = filter;
         
         // Aktif filtre butonunu güncelle
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.mini-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`.tab-btn[data-filter="${filter}"]`).classList.add('active');
+        document.querySelector(`.mini-btn[data-filter="${filter}"]`).classList.add('active');
         
         this.render();
     }
@@ -226,12 +297,82 @@ class TodoManager {
         this.currentCategory = category;
         
         // Aktif kategori filtre butonunu güncelle
-        document.querySelectorAll('.chip').forEach(btn => {
+        document.querySelectorAll('.category-mini').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`.chip[data-category="${category}"]`).classList.add('active');
+        document.querySelector(`.category-mini[data-category="${category}"]`).classList.add('active');
         
         this.render();
+    }
+
+    // Filtreleri toggle et
+    toggleFilters() {
+        const filtersPanel = document.getElementById('filtersPanel');
+        const filterToggle = document.getElementById('filterToggle');
+        
+        filtersPanel.classList.toggle('active');
+        filterToggle.style.background = filtersPanel.classList.contains('active') 
+            ? 'rgba(120, 220, 232, 0.3)' 
+            : 'rgba(255, 255, 255, 0.1)';
+    }
+
+    // Advanced modal aç
+    openAdvancedModal() {
+        const modal = document.getElementById('advancedModal');
+        modal.classList.add('active');
+        document.getElementById('modalTodoInput').focus();
+    }
+
+    // Modal kapat
+    closeModal() {
+        const modal = document.getElementById('advancedModal');
+        modal.classList.remove('active');
+        
+        // Form alanlarını temizle
+        document.getElementById('modalTodoInput').value = '';
+        document.getElementById('modalCategorySelect').value = 'genel';
+        document.getElementById('modalPrioritySelect').value = 'orta';
+        document.getElementById('modalDueDateInput').value = '';
+    }
+
+    // Modal'dan görev ekle
+    addTodoFromModal() {
+        const text = document.getElementById('modalTodoInput').value.trim();
+        const category = document.getElementById('modalCategorySelect').value;
+        const priority = document.getElementById('modalPrioritySelect').value;
+        const dueDate = document.getElementById('modalDueDateInput').value;
+
+        if (!text) {
+            this.showNotification('Lütfen bir görev giriniz!', 'error');
+            return;
+        }
+
+        if (text.length > 100) {
+            this.showNotification('Görev metni çok uzun! (Max 100 karakter)', 'error');
+            return;
+        }
+
+        const todo = {
+            id: Date.now(),
+            text: text,
+            category: category,
+            priority: priority,
+            dueDate: dueDate || null,
+            completed: false,
+            createdAt: new Date().toLocaleDateString('tr-TR'),
+            createdTime: new Date().toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            })
+        };
+
+        this.todos.unshift(todo);
+        this.saveTodos();
+        this.render();
+        this.updateStats();
+        this.closeModal();
+        
+        this.showNotification('Detaylı görev eklendi! ✨', 'success');
     }
 
     // Tamamlanan görevleri temizle
