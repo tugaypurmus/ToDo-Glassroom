@@ -108,12 +108,9 @@ body {
     backdrop-filter: blur(25px);
     border-right: 1px solid rgba(255, 255, 255, 0.15);
     padding: 0;
-    position: fixed;
     height: 100vh;
-    left: 0;
-    top: 0;
-    z-index: 100;
     overflow-y: auto;
+    flex-shrink: 0;
 }
 
 .sidebar-header {
@@ -243,14 +240,12 @@ body {
 /* Main Content Container */
 .main-container {
     flex: 1;
-    margin-left: 280px;
-    padding: 30px 40px 20px 40px;
+    padding: 20px 40px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     min-height: 100vh;
-    width: calc(100% - 280px);
-    max-width: none;
+    overflow-x: hidden;
 }
 
 /* Forced View Modes */
@@ -259,10 +254,8 @@ body.force-mobile .sidebar {
 }
 
 body.force-mobile .main-container {
-    margin-left: 0 !important;
     max-width: 800px !important;
     margin: 0 auto !important;
-    width: auto !important;
     padding: 20px !important;
 }
 
@@ -275,11 +268,7 @@ body.force-desktop .sidebar {
 }
 
 body.force-desktop .main-container {
-    margin-left: 280px !important;
-    max-width: none !important;
-    margin: 0 !important;
-    width: calc(100% - 280px) !important;
-    padding: 30px 40px 20px 40px !important;
+    padding: 20px 40px !important;
 }
 
 body.force-desktop .app-container {
@@ -293,10 +282,8 @@ body.force-desktop .app-container {
     }
     
     body:not(.force-desktop) .main-container {
-        margin-left: 0;
         max-width: 800px;
         margin: 0 auto;
-        width: auto;
         padding: 20px;
     }
     
@@ -369,10 +356,7 @@ body.force-desktop .app-container {
     }
     
     body:not(.force-mobile) .main-container {
-        margin-left: 280px;
-        width: calc(100% - 280px);
-        padding: 30px 40px 20px 40px;
-        max-width: none;
+        padding: 20px 40px;
     }
     
     body:not(.force-mobile) .app-container {
