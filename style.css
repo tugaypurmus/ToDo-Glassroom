@@ -278,6 +278,10 @@ body.force-mobile .main-container {
     padding: 20px !important;
 }
 
+body.force-mobile .mobile-controls {
+    display: flex !important;
+}
+
 body.force-mobile .app-container {
     display: block !important;
 }
@@ -360,9 +364,9 @@ body.force-desktop .app-container {
         display: block;
     }
     
-    /* Show mobile controls in mobile mode */
+    /* Hide mobile controls in actual mobile mode */
     body:not(.force-desktop) .mobile-controls {
-        display: flex;
+        display: none;
     }
 }
 
@@ -378,6 +382,11 @@ body.force-desktop .app-container {
     }
     
     body:not(.force-mobile) .app-container {
+        display: flex;
+    }
+    
+    /* Show mobile controls in desktop mode for switching */
+    .mobile-controls {
         display: flex;
     }
 }
