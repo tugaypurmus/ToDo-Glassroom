@@ -474,7 +474,7 @@ class TodoManager {
         setTimeout(() => {
             shortcutsHelp.classList.remove('auto-hide');
             helpButton.classList.add('visible');
-        }, 10000);
+        }, 5000);
     }
 
     // Shortcuts help'i toggle et
@@ -1283,7 +1283,6 @@ class TodoManager {
 
     // Settings Modal Yönetimi
     openSettingsModal() {
-        console.log('openSettingsModal called');
         const modal = document.getElementById('settingsModal');
         
         if (!modal) {
@@ -1291,7 +1290,6 @@ class TodoManager {
             return;
         }
         
-        console.log('Modal found, opening...');
         const currentStorage = this.storageManager.storageType;
         
         // Mevcut ayarları yükle
@@ -1312,7 +1310,6 @@ class TodoManager {
         
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        console.log('Modal opened successfully');
     }
 
     closeSettingsModal() {
@@ -1522,21 +1519,10 @@ class TodoManager {
 document.addEventListener('DOMContentLoaded', () => {
     window.todoManager = new TodoManager();
     
-    // Test fonksiyonu - geçici
-    window.testSettings = () => {
-        console.log('Testing settings button...');
-        const btn = document.getElementById('settingsBtn');
-        console.log('Settings button:', btn);
-        if (btn) {
-            btn.click();
-        }
-    };
-    
     // Konsol mesajı
     console.log(`🌟 Glassmorphism Todo App ${window.todoManager.version} başarıyla yüklendi!`);
     console.log('📊 İstatistikler için: todoManager.getStats()');
     console.log('💾 Dışa aktarmak için: todoManager.exportTodos()');
-    console.log('🧪 Test için: testSettings()');
 });
 
 // Service Worker kaydı (PWA için - gelecek özellik)

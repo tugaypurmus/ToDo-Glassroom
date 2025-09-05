@@ -1153,7 +1153,7 @@ body.force-desktop .app-container {
 }
 
 /* Modal Styles */
-.modal {
+.modal, .modal-overlay {
     display: none;
     position: fixed;
     top: 0;
@@ -1162,13 +1162,13 @@ body.force-desktop .app-container {
     height: 100%;
     background: rgba(0, 0, 0, 0.7);
     backdrop-filter: blur(8px);
-    z-index: 1000;
+    z-index: 10000;
     align-items: center;
     justify-content: center;
 }
 
-.modal.active {
-    display: flex;
+.modal.active, .modal-overlay[style*="flex"] {
+    display: flex !important;
 }
 
 .modal-content {
@@ -1339,7 +1339,7 @@ body.force-desktop .app-container {
 }
 
 .shortcuts-help.auto-hide {
-    animation: shortcutAutoShow 10s ease-in-out;
+    animation: shortcutAutoShow 5s ease-in-out;
 }
 
 .shortcuts-content {
@@ -1471,11 +1471,11 @@ body.force-desktop .app-container {
         opacity: 0;
         transform: translateX(100%);
     }
-    10% {
+    20% {
         opacity: 1;
         transform: translateX(0);
     }
-    90% {
+    80% {
         opacity: 1;
         transform: translateX(0);
     }
