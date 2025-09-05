@@ -1,7 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.2';
+        this.version = 'v1.3';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
@@ -27,6 +27,7 @@ class TodoManager {
     init() {
         this.bindEvents();
         this.initSortable();
+        this.initShortcutsHelp();
         this.render();
         this.updateStats();
     }
@@ -69,6 +70,10 @@ class TodoManager {
         // Todo listesi event delegation
         document.getElementById('todoList').addEventListener('click', (e) => this.handleTodoClick(e));
         document.getElementById('todoList').addEventListener('change', (e) => this.handleTodoChange(e));
+
+        // Shortcuts help
+        document.getElementById('shortcutsClose').addEventListener('click', () => this.hideShortcutsHelp());
+        document.getElementById('helpButton').addEventListener('click', () => this.toggleShortcutsHelp());
     }
 
     // Drag & Drop sıralama başlat
@@ -90,6 +95,51 @@ class TodoManager {
                 }
             });
         }
+    }
+
+    // Shortcuts help sistemi başlat
+    initShortcutsHelp() {
+        // 1 saniye sonra otomatik göster
+        setTimeout(() => {
+            this.showShortcutsHelpAuto();
+        }, 1000);
+    }
+
+    // Otomatik shortcuts help göster (3 saniye sonra gizle)
+    showShortcutsHelpAuto() {
+        const shortcutsHelp = document.getElementById('shortcutsHelp');
+        const helpButton = document.getElementById('helpButton');
+        
+        shortcutsHelp.classList.add('auto-hide');
+        
+        // 3 saniye sonra gizle ve help butonunu göster
+        setTimeout(() => {
+            shortcutsHelp.classList.remove('auto-hide');
+            helpButton.classList.add('visible');
+        }, 3000);
+    }
+
+    // Shortcuts help'i toggle et
+    toggleShortcutsHelp() {
+        const shortcutsHelp = document.getElementById('shortcutsHelp');
+        
+        if (shortcutsHelp.classList.contains('show')) {
+            this.hideShortcutsHelp();
+        } else {
+            this.showShortcutsHelp();
+        }
+    }
+
+    // Shortcuts help göster
+    showShortcutsHelp() {
+        const shortcutsHelp = document.getElementById('shortcutsHelp');
+        shortcutsHelp.classList.add('show');
+    }
+
+    // Shortcuts help gizle
+    hideShortcutsHelp() {
+        const shortcutsHelp = document.getElementById('shortcutsHelp');
+        shortcutsHelp.classList.remove('show');
     }
 
     // Sıralama bittiğinde çalışacak fonksiyon
@@ -759,23 +809,45 @@ function toggleTheme() {
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
+    // Modal açıkken shortcuts'ları devre dışı bırak
+    if (document.getElementById('advancedModal').classList.contains('active')) {
+        return;
+    }
+    
     // Ctrl/Cmd + Enter: Hızlı görev ekleme
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
         const input = document.getElementById('todoInput');
         if (document.activeElement !== input) {
             input.focus();
         } else {
-            window.todoManager.addTodo();
+            window.todoManager.quickAddTodo();
         }
     }
     
-    // Esc: Input'u temizle
+    // Ctrl/Cmd + D: Detaylı ekleme modal'ı aç
+    if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault();
+        window.todoManager.openAdvancedModal();
+    }
+    
+    // Esc: Input'u temizle veya modal/shortcuts kapat
     if (e.key === 'Escape') {
         const input = document.getElementById('todoInput');
-        if (document.activeElement === input) {
+        const shortcutsHelp = document.getElementById('shortcutsHelp');
+        
+        if (shortcutsHelp.classList.contains('show')) {
+            window.todoManager.hideShortcutsHelp();
+        } else if (document.activeElement === input) {
             input.value = '';
             input.blur();
         }
+    }
+    
+    // F1 veya ?: Help'i toggle et
+    if (e.key === 'F1' || (e.shiftKey && e.key === '?')) {
+        e.preventDefault();
+        window.todoManager.toggleShortcutsHelp();
     }
 });
 
