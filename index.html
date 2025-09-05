@@ -17,13 +17,107 @@
         <div class="bubble bubble-5"></div>
     </div>
 
-    <div class="container">
-        <header class="glass-card header">
-            <h1><i class="fas fa-tasks"></i> Yapılacaklar Listesi</h1>
-            <p>Glassmorphism tasarımlı modern görev yöneticisi</p>
-        </header>
+    <div class="app-container">
+        <!-- Desktop Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-tasks"></i> Todo</h2>
+                <p class="version">v1.4</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>📊 Durum</h3>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item active" data-filter="all">
+                                <i class="fas fa-list"></i>
+                                <span>Tümü</span>
+                                <span class="count" id="sidebarAllCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-filter="active">
+                                <i class="fas fa-clock"></i>
+                                <span>Aktif</span>
+                                <span class="count" id="sidebarActiveCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-filter="completed">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Tamamlanan</span>
+                                <span class="count" id="sidebarCompletedCount">0</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <h3>📂 Kategoriler</h3>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item category-nav active" data-category="all">
+                                <i class="fas fa-th"></i>
+                                <span>Tüm Kategoriler</span>
+                                <span class="count" id="sidebarAllCatCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item category-nav" data-category="is">
+                                <span class="category-emoji">💼</span>
+                                <span>İş</span>
+                                <span class="count" id="sidebarIsCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item category-nav" data-category="kisisel">
+                                <span class="category-emoji">👤</span>
+                                <span>Kişisel</span>
+                                <span class="count" id="sidebarKisiselCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item category-nav" data-category="acil">
+                                <span class="category-emoji">🚨</span>
+                                <span>Acil</span>
+                                <span class="count" id="sidebarAcilCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item category-nav" data-category="alısveris">
+                                <span class="category-emoji">🛒</span>
+                                <span>Alışveriş</span>
+                                <span class="count" id="sidebarAlisverisCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item category-nav" data-category="saglik">
+                                <span class="category-emoji">🏥</span>
+                                <span>Sağlık</span>
+                                <span class="count" id="sidebarSaglikCount">0</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item category-nav" data-category="egitim">
+                                <span class="category-emoji">📚</span>
+                                <span>Eğitim</span>
+                                <span class="count" id="sidebarEgitimCount">0</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
 
-        <main class="main-content">
+        <!-- Main Content Area -->
+        <div class="main-container">
+            <header class="mobile-header glass-card">
+                <h1><i class="fas fa-tasks"></i> Yapılacaklar Listesi</h1>
+                <p>Glassmorphism tasarımlı modern görev yöneticisi</p>
+            </header>
+
+            <main class="main-content">
             <!-- Compact Quick Add -->
             <section class="glass-card quick-add-section">
                 <div class="quick-input">
@@ -89,9 +183,10 @@
             </section>
         </main>
 
-        <footer class="glass-card footer">
-            <p>&copy; 2025 Glassmorphism Todo App v1.3 - Modern ve şık görev yöneticisi</p>
-        </footer>
+            <footer class="glass-card footer">
+                <p>&copy; 2025 Glassmorphism Todo App v1.4 - Modern ve şık görev yöneticisi</p>
+            </footer>
+        </div>
     </div>
 
     <!-- Keyboard Shortcuts Help -->

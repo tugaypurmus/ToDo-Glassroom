@@ -1,7 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.3';
+        this.version = 'v1.4';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
@@ -67,6 +67,14 @@ class TodoManager {
             btn.addEventListener('click', (e) => this.setCategoryFilter(e.target.dataset.category));
         });
 
+        // Desktop Sidebar Navigation
+        document.querySelectorAll('.nav-item[data-filter]').forEach(btn => {
+            btn.addEventListener('click', (e) => this.setSidebarFilter(e.target.closest('.nav-item').dataset.filter));
+        });
+        document.querySelectorAll('.category-nav[data-category]').forEach(btn => {
+            btn.addEventListener('click', (e) => this.setSidebarCategory(e.target.closest('.category-nav').dataset.category));
+        });
+
         // Todo listesi event delegation
         document.getElementById('todoList').addEventListener('click', (e) => this.handleTodoClick(e));
         document.getElementById('todoList').addEventListener('change', (e) => this.handleTodoChange(e));
@@ -112,11 +120,11 @@ class TodoManager {
         
         shortcutsHelp.classList.add('auto-hide');
         
-        // 3 saniye sonra gizle ve help butonunu göster
+        // 10 saniye sonra gizle ve help butonunu göster
         setTimeout(() => {
             shortcutsHelp.classList.remove('auto-hide');
             helpButton.classList.add('visible');
-        }, 3000);
+        }, 10000);
     }
 
     // Shortcuts help'i toggle et
@@ -355,6 +363,48 @@ class TodoManager {
         this.render();
     }
 
+    // Sidebar filtre ayarla
+    setSidebarFilter(filter) {
+        this.currentFilter = filter;
+        
+        // Sidebar aktif filtre butonunu güncelle
+        document.querySelectorAll('.nav-item[data-filter]').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`.nav-item[data-filter="${filter}"]`).classList.add('active');
+        
+        // Mobil filtreleri de güncelle
+        document.querySelectorAll('.mini-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const mobileBtn = document.querySelector(`.mini-btn[data-filter="${filter}"]`);
+        if (mobileBtn) mobileBtn.classList.add('active');
+        
+        this.render();
+        this.updateSidebarStats();
+    }
+
+    // Sidebar kategori filtresi ayarla
+    setSidebarCategory(category) {
+        this.currentCategory = category;
+        
+        // Sidebar aktif kategori butonunu güncelle  
+        document.querySelectorAll('.category-nav').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`.category-nav[data-category="${category}"]`).classList.add('active');
+        
+        // Mobil kategori filtrelerini de güncelle
+        document.querySelectorAll('.category-mini').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        const mobileCatBtn = document.querySelector(`.category-mini[data-category="${category}"]`);
+        if (mobileCatBtn) mobileCatBtn.classList.add('active');
+        
+        this.render();
+        this.updateSidebarStats();
+    }
+
     // Filtreleri toggle et
     toggleFilters() {
         const filtersPanel = document.getElementById('filtersPanel');
@@ -562,6 +612,45 @@ class TodoManager {
         // Temizle butonunu göster/gizle
         const clearBtn = document.getElementById('clearCompleted');
         clearBtn.style.display = completed > 0 ? 'flex' : 'none';
+
+        // Sidebar istatistiklerini güncelle
+        this.updateSidebarStats();
+    }
+
+    // Sidebar istatistiklerini güncelle  
+    updateSidebarStats() {
+        const total = this.todos.length;
+        const active = this.todos.filter(t => !t.completed).length;
+        const completed = this.todos.filter(t => t.completed).length;
+
+        // Durum istatistikleri
+        const allCountEl = document.getElementById('sidebarAllCount');
+        const activeCountEl = document.getElementById('sidebarActiveCount');
+        const completedCountEl = document.getElementById('sidebarCompletedCount');
+        
+        if (allCountEl) allCountEl.textContent = total;
+        if (activeCountEl) activeCountEl.textContent = active;
+        if (completedCountEl) completedCountEl.textContent = completed;
+
+        // Kategori istatistikleri
+        const allCatCountEl = document.getElementById('sidebarAllCatCount');
+        if (allCatCountEl) allCatCountEl.textContent = total;
+
+        // Her kategori için sayıları güncelle
+        const categoryIds = {
+            'is': 'sidebarIsCount',
+            'kisisel': 'sidebarKisiselCount', 
+            'acil': 'sidebarAcilCount',
+            'alısveris': 'sidebarAlisverisCount',
+            'saglik': 'sidebarSaglikCount',
+            'egitim': 'sidebarEgitimCount'
+        };
+
+        Object.entries(categoryIds).forEach(([category, id]) => {
+            const count = this.todos.filter(t => t.category === category).length;
+            const countEl = document.getElementById(id);
+            if (countEl) countEl.textContent = count;
+        });
     }
 
     // Todo list click handler
