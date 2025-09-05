@@ -336,30 +336,66 @@ class TodoManager {
         });
 
         // Settings modal events
-        document.getElementById('settingsBtn').addEventListener('click', () => this.openSettingsModal());
-        document.getElementById('settingsCancel').addEventListener('click', () => this.closeSettingsModal());
-        document.querySelector('#settingsModal .modal-close').addEventListener('click', () => this.closeSettingsModal());
-        document.getElementById('settingsSave').addEventListener('click', () => this.saveSettings());
+        const settingsBtn = document.getElementById('settingsBtn');
+        if (settingsBtn) {
+            settingsBtn.addEventListener('click', () => this.openSettingsModal());
+        } else {
+            console.error('settingsBtn not found');
+        }
+        
+        const settingsCancel = document.getElementById('settingsCancel');
+        if (settingsCancel) {
+            settingsCancel.addEventListener('click', () => this.closeSettingsModal());
+        }
+        
+        const modalClose = document.querySelector('#settingsModal .modal-close');
+        if (modalClose) {
+            modalClose.addEventListener('click', () => this.closeSettingsModal());
+        }
+        
+        const settingsSave = document.getElementById('settingsSave');
+        if (settingsSave) {
+            settingsSave.addEventListener('click', () => this.saveSettings());
+        }
         
         // Settings modal dışına tıklama
-        document.getElementById('settingsModal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('settingsModal')) {
-                this.closeSettingsModal();
+        const settingsModal = document.getElementById('settingsModal');
+        if (settingsModal) {
+            settingsModal.addEventListener('click', (e) => {
+                if (e.target === settingsModal) {
+                    this.closeSettingsModal();
+                }
+            });
+        }
+
+        // Storage type değişimi - DOM ready olduktan sonra bağlanacak
+        setTimeout(() => {
+            document.querySelectorAll('input[name="storageType"]').forEach(radio => {
+                radio.addEventListener('change', () => this.handleStorageTypeChange());
+            });
+
+            // Supabase config events
+            const testConnection = document.getElementById('testConnection');
+            if (testConnection) {
+                testConnection.addEventListener('click', () => this.testSupabaseConnection());
             }
-        });
-
-        // Storage type değişimi
-        document.querySelectorAll('input[name="storageType"]').forEach(radio => {
-            radio.addEventListener('change', () => this.handleStorageTypeChange());
-        });
-
-        // Supabase config events
-        document.getElementById('testConnection').addEventListener('click', () => this.testSupabaseConnection());
-        document.getElementById('toggleKey').addEventListener('click', () => this.togglePasswordVisibility());
-        
-        // Migration events
-        document.getElementById('migrateData').addEventListener('click', () => this.migrateData());
-        document.getElementById('skipMigration').addEventListener('click', () => this.skipMigration());
+            
+            const toggleKey = document.getElementById('toggleKey');
+            if (toggleKey) {
+                toggleKey.addEventListener('click', () => this.togglePasswordVisibility());
+            }
+            
+            // Migration events
+            const migrateData = document.getElementById('migrateData');
+            if (migrateData) {
+                migrateData.addEventListener('click', () => this.migrateData());
+            }
+            
+            const skipMigration = document.getElementById('skipMigration');
+            if (skipMigration) {
+                skipMigration.addEventListener('click', () => this.skipMigration());
+            }
+        }, 100);
 
         // Compact filter butonları
         document.querySelectorAll('.mini-btn[data-filter]').forEach(btn => {
@@ -1247,22 +1283,36 @@ class TodoManager {
 
     // Settings Modal Yönetimi
     openSettingsModal() {
+        console.log('openSettingsModal called');
         const modal = document.getElementById('settingsModal');
+        
+        if (!modal) {
+            console.error('settingsModal not found in DOM');
+            return;
+        }
+        
+        console.log('Modal found, opening...');
         const currentStorage = this.storageManager.storageType;
         
         // Mevcut ayarları yükle
-        document.getElementById(currentStorage).checked = true;
+        const currentRadio = document.getElementById(currentStorage);
+        if (currentRadio) {
+            currentRadio.checked = true;
+        }
         this.handleStorageTypeChange();
         
         // Supabase config varsa yükle
         if (currentStorage === 'supabase') {
             const config = this.storageManager.getSupabaseConfig();
-            document.getElementById('supabaseUrl').value = config.url;
-            document.getElementById('supabaseKey').value = config.key;
+            const urlInput = document.getElementById('supabaseUrl');
+            const keyInput = document.getElementById('supabaseKey');
+            if (urlInput) urlInput.value = config.url;
+            if (keyInput) keyInput.value = config.key;
         }
         
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        console.log('Modal opened successfully');
     }
 
     closeSettingsModal() {
@@ -1472,10 +1522,21 @@ class TodoManager {
 document.addEventListener('DOMContentLoaded', () => {
     window.todoManager = new TodoManager();
     
+    // Test fonksiyonu - geçici
+    window.testSettings = () => {
+        console.log('Testing settings button...');
+        const btn = document.getElementById('settingsBtn');
+        console.log('Settings button:', btn);
+        if (btn) {
+            btn.click();
+        }
+    };
+    
     // Konsol mesajı
     console.log(`🌟 Glassmorphism Todo App ${window.todoManager.version} başarıyla yüklendi!`);
     console.log('📊 İstatistikler için: todoManager.getStats()');
     console.log('💾 Dışa aktarmak için: todoManager.exportTodos()');
+    console.log('🧪 Test için: testSettings()');
 });
 
 // Service Worker kaydı (PWA için - gelecek özellik)
