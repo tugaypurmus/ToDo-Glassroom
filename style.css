@@ -296,6 +296,63 @@ body.force-desktop .app-container {
     body:not(.force-desktop) .app-container {
         display: block;
     }
+    
+    /* Mobile View Toggle Buttons */
+    body:not(.force-desktop) .mobile-view-toggle {
+        display: flex;
+    }
+    
+    /* Help button mobilde yukarıda dursun */
+    .help-button {
+        bottom: 120px;
+        top: auto;
+    }
+}
+
+/* Mobile View Toggle Buttons */
+.mobile-view-toggle {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 200;
+}
+
+.view-toggle-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.view-toggle-btn.active {
+    background: linear-gradient(135deg, rgba(120, 220, 232, 0.4) 0%, rgba(186, 85, 211, 0.4) 100%);
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    border-color: rgba(120, 220, 232, 0.3);
+}
+
+.view-toggle-btn i {
+    font-size: 1rem;
 }
 
 /* Desktop Layout (Auto Mode) */

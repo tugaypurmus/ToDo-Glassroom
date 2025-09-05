@@ -1,7 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.5.1';
+        this.version = 'v1.5.2';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
@@ -77,9 +77,14 @@ class TodoManager {
             btn.addEventListener('click', (e) => this.setSidebarCategory(e.target.closest('.category-nav').dataset.category));
         });
 
-        // View Toggle Navigation
+        // View Toggle Navigation (Sidebar)
         document.querySelectorAll('.view-toggle[data-view]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setViewMode(e.target.closest('.view-toggle').dataset.view));
+        });
+
+        // Mobile View Toggle Buttons
+        document.querySelectorAll('.view-toggle-btn[data-view]').forEach(btn => {
+            btn.addEventListener('click', (e) => this.setViewMode(e.target.closest('.view-toggle-btn').dataset.view));
         });
 
         // Todo listesi event delegation
@@ -698,6 +703,7 @@ class TodoManager {
     }
 
     updateViewButtons() {
+        // Sidebar view toggle buttons
         document.querySelectorAll('.view-toggle').forEach(btn => {
             const isActive = btn.dataset.view === this.currentView;
             btn.classList.toggle('active', isActive);
@@ -706,6 +712,12 @@ class TodoManager {
             if (indicator) {
                 indicator.classList.toggle('active', isActive);
             }
+        });
+
+        // Mobile view toggle buttons
+        document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+            const isActive = btn.dataset.view === this.currentView;
+            btn.classList.toggle('active', isActive);
         });
     }
 
