@@ -1,7 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.5.2';
+        this.version = 'v1.5.3';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
