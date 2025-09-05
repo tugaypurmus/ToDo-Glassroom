@@ -1,6 +1,6 @@
 # 🌟 Glassmorphism Todo App
 
-Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir yapılacaklar listesi uygulaması.
+Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir yapılacaklar listesi uygulaması. Desktop mode ile otomatik responsive sidebar navigasyon sistemi.
 
 ## ✨ Özellikler
 
@@ -17,18 +17,26 @@ Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir y
 - **Görev Silme**: Onay ile güvenli silme
 - **Durum Değiştirme**: Tamamlandı/aktif durumu
 - **Otomatik Kaydetme**: Local storage ile veri saklama
+- **Kategori Sistemi**: 6 farklı kategori desteği
+- **Öncelik Seviyeleri**: Yüksek/Orta/Düşük öncelik
+- **Due Date**: Görevler için son tarih
 
-### 🔍 Filtreleme
-- **Tümü**: Tüm görevleri görüntüle
-- **Aktif**: Sadece tamamlanmamış görevler
-- **Tamamlanan**: Sadece tamamlanmış görevler
+### 🔍 Filtreleme & Navigasyon
+- **Desktop Sidebar**: Otomatik responsive sol sidebar navigasyon
+- **Durum Filtreleri**: Tümü/Aktif/Tamamlanan görevler
+- **Kategori Filtreleri**: İş, Kişisel, Acil, Alışveriş, Sağlık, Eğitim
+- **Gerçek Zamanlı Sayaçlar**: Her kategori için canlı görev sayıları
 - **Toplu Temizleme**: Tamamlanan görevleri temizle
+- **Mobil Uyumlu**: Compact filter paneli mobil cihazlarda
 
 ### 🎯 İnteraktif Özellikler
 - **Bildirimler**: Başarılı işlemler için toast bildirimleri
 - **İstatistikler**: Toplam ve tamamlanan görev sayısı
-- **Klavye Kısayolları**: Hızlı erişim için kısayollar
+- **Klavye Kısayolları**: Otomatik açılan yardım paneli (10 saniye)
 - **Form Validasyonu**: Giriş kontrolü
+- **Drag & Drop**: SortableJS ile görev sıralaması
+- **Modal Interface**: Detaylı görev ekleme sistemi
+- **Smart Categorization**: Akıllı kategori önerisi
 
 ## 🚀 Kurulum
 
@@ -140,19 +148,27 @@ ToDo-Glassroom/
 - **Memory leak prevention**
 
 ### Boyut
-- **HTML**: ~3KB
-- **CSS**: ~8KB
-- **JavaScript**: ~12KB
-- **Toplam**: ~23KB (gzipped: ~8KB)
+- **HTML**: ~4KB
+- **CSS**: ~12KB
+- **JavaScript**: ~15KB
+- **Toplam**: ~31KB (gzipped: ~11KB)
+
+## ✅ Tamamlanan Özellikler (v1.4)
+
+- [x] **Desktop Mode**: Otomatik responsive sidebar navigasyon
+- [x] **Kategori Sistemi**: 6 farklı kategori desteği
+- [x] **Due Date**: Tarih ekleme ve overdue detection
+- [x] **Drag & Drop**: SortableJS ile görev sıralama
+- [x] **Smart UI**: Compact interface ve modal sistem
+- [x] **Klavye Kısayolları**: Otomatik yardım paneli
 
 ## 🔄 Gelecek Özellikler
 
-- [ ] **PWA Desteği**: Offline çalışma
-- [ ] **Tema Değiştirici**: Dark/Light mode
-- [ ] **Drag & Drop**: Görev sıralama
-- [ ] **Kategoriler**: Görev gruplandırma
-- [ ] **Due Date**: Tarih ekleme
-- [ ] **Export/Import**: JSON backup
+- [ ] **PWA Desteği**: Offline çalışma ve Service Worker
+- [ ] **Tema Değiştirici**: Dark/Light mode sistemi
+- [ ] **Export/Import**: JSON backup fonksiyonu
+- [ ] **Görev Notları**: Detaylı açıklama sistemi
+- [ ] **İstatistik Dashboard**: Gelişmiş analitik paneli
 - [ ] **Ses Efektleri**: İnteraksiyon sesleri
 
 ## 🤝 Katkıda Bulunma
