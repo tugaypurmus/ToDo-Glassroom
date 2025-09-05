@@ -1,8 +1,283 @@
+// Storage Manager Sınıfı
+class StorageManager {
+    constructor() {
+        this.storageType = localStorage.getItem('storageType') || 'localStorage';
+        this.supabaseClient = null;
+        this.isRealtimeEnabled = false;
+        this.realtimeSubscription = null;
+        this.initializeStorage();
+    }
+
+    async initializeStorage() {
+        if (this.storageType === 'supabase') {
+            await this.initializeSupabase();
+        }
+    }
+
+    async initializeSupabase() {
+        const config = this.getSupabaseConfig();
+        if (config.url && config.key) {
+            try {
+                this.supabaseClient = window.supabase.createClient(config.url, config.key);
+                await this.setupRealtimeSubscription();
+                console.log('Supabase initialized successfully');
+            } catch (error) {
+                console.error('Supabase initialization failed:', error);
+                this.storageType = 'localStorage';
+            }
+        } else {
+            this.storageType = 'localStorage';
+        }
+    }
+
+    getSupabaseConfig() {
+        return {
+            url: localStorage.getItem('supabaseUrl') || '',
+            key: localStorage.getItem('supabaseKey') || ''
+        };
+    }
+
+    async testSupabaseConnection(url, key) {
+        try {
+            const client = window.supabase.createClient(url, key);
+            const { data, error } = await client.from('todos').select('count').limit(1);
+            return { success: !error, error: error?.message };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    }
+
+    async setupRealtimeSubscription() {
+        if (!this.supabaseClient || this.isRealtimeEnabled) return;
+
+        try {
+            this.realtimeSubscription = this.supabaseClient
+                .channel('todos-changes')
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: 'todos' },
+                    (payload) => {
+                        if (window.todoManager) {
+                            window.todoManager.handleRealtimeUpdate(payload);
+                        }
+                    }
+                )
+                .subscribe();
+            
+            this.isRealtimeEnabled = true;
+            console.log('Real-time subscription enabled');
+        } catch (error) {
+            console.error('Real-time setup failed:', error);
+        }
+    }
+
+    async loadTodos() {
+        if (this.storageType === 'supabase' && this.supabaseClient) {
+            try {
+                const { data, error } = await this.supabaseClient
+                    .from('todos')
+                    .select('*')
+                    .order('order_index', { ascending: true })
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                return data || [];
+            } catch (error) {
+                console.error('Supabase load error:', error);
+                return this.loadFromLocalStorage();
+            }
+        } else {
+            return this.loadFromLocalStorage();
+        }
+    }
+
+    loadFromLocalStorage() {
+        try {
+            return JSON.parse(localStorage.getItem('glassmorphism-todos')) || [];
+        } catch {
+            return [];
+        }
+    }
+
+    async saveTodos(todos) {
+        if (this.storageType === 'supabase' && this.supabaseClient) {
+            // Supabase otomatik olarak real-time güncellemeler yapar
+            // Bu method artık sadece localStorage için kullanılacak
+        } else {
+            localStorage.setItem('glassmorphism-todos', JSON.stringify(todos));
+        }
+    }
+
+    async addTodo(todo) {
+        if (this.storageType === 'supabase' && this.supabaseClient) {
+            try {
+                const { data, error } = await this.supabaseClient
+                    .from('todos')
+                    .insert([{
+                        text: todo.text,
+                        completed: todo.completed || false,
+                        category: todo.category || 'genel',
+                        priority: todo.priority || 'orta',
+                        due_date: todo.dueDate || null,
+                        order_index: todo.orderIndex || 0,
+                        created_at: new Date().toISOString()
+                    }])
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Supabase add error:', error);
+                throw error;
+            }
+        } else {
+            // localStorage için mevcut logic
+            todo.id = Date.now();
+            todo.createdAt = new Date().toISOString();
+            return todo;
+        }
+    }
+
+    async updateTodo(id, updates) {
+        if (this.storageType === 'supabase' && this.supabaseClient) {
+            try {
+                const { data, error } = await this.supabaseClient
+                    .from('todos')
+                    .update({
+                        text: updates.text,
+                        completed: updates.completed,
+                        category: updates.category,
+                        priority: updates.priority,
+                        due_date: updates.dueDate,
+                        order_index: updates.orderIndex,
+                        completed_at: updates.completed ? new Date().toISOString() : null
+                    })
+                    .eq('id', id)
+                    .select()
+                    .single();
+                
+                if (error) throw error;
+                return data;
+            } catch (error) {
+                console.error('Supabase update error:', error);
+                throw error;
+            }
+        }
+        // localStorage için mevcut logic TodoManager'da kalacak
+    }
+
+    async deleteTodo(id) {
+        if (this.storageType === 'supabase' && this.supabaseClient) {
+            try {
+                const { error } = await this.supabaseClient
+                    .from('todos')
+                    .delete()
+                    .eq('id', id);
+                
+                if (error) throw error;
+                return true;
+            } catch (error) {
+                console.error('Supabase delete error:', error);
+                throw error;
+            }
+        }
+        // localStorage için mevcut logic TodoManager'da kalacak
+    }
+
+    async updateTodosOrder(todos) {
+        if (this.storageType === 'supabase' && this.supabaseClient) {
+            try {
+                const updates = todos.map((todo, index) => ({
+                    id: todo.id,
+                    order_index: index
+                }));
+
+                for (const update of updates) {
+                    await this.supabaseClient
+                        .from('todos')
+                        .update({ order_index: update.order_index })
+                        .eq('id', update.id);
+                }
+                return true;
+            } catch (error) {
+                console.error('Supabase order update error:', error);
+                throw error;
+            }
+        }
+        // localStorage için mevcut logic
+    }
+
+    async migrateToSupabase(todos) {
+        if (!this.supabaseClient) return false;
+
+        try {
+            // Mevcut Supabase verilerini temizle
+            await this.supabaseClient.from('todos').delete().gte('id', 0);
+            
+            // LocalStorage verilerini Supabase'e aktar
+            if (todos.length > 0) {
+                const supabaseTodos = todos.map(todo => ({
+                    text: todo.text,
+                    completed: todo.completed || false,
+                    category: todo.category || 'genel',
+                    priority: todo.priority || 'orta',
+                    due_date: todo.dueDate || null,
+                    order_index: todo.orderIndex || 0,
+                    created_at: todo.createdAt || new Date().toISOString(),
+                    completed_at: todo.completedAt || null
+                }));
+
+                const { error } = await this.supabaseClient
+                    .from('todos')
+                    .insert(supabaseTodos);
+                
+                if (error) throw error;
+            }
+
+            console.log('Migration to Supabase completed');
+            return true;
+        } catch (error) {
+            console.error('Migration to Supabase failed:', error);
+            return false;
+        }
+    }
+
+    async migrateToLocalStorage(todos) {
+        try {
+            localStorage.setItem('glassmorphism-todos', JSON.stringify(todos));
+            console.log('Migration to localStorage completed');
+            return true;
+        } catch (error) {
+            console.error('Migration to localStorage failed:', error);
+            return false;
+        }
+    }
+
+    setStorageType(type) {
+        this.storageType = type;
+        localStorage.setItem('storageType', type);
+    }
+
+    saveSupabaseConfig(url, key) {
+        localStorage.setItem('supabaseUrl', url);
+        localStorage.setItem('supabaseKey', key);
+    }
+
+    disconnect() {
+        if (this.realtimeSubscription) {
+            this.realtimeSubscription.unsubscribe();
+            this.isRealtimeEnabled = false;
+        }
+        this.supabaseClient = null;
+    }
+}
+
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.5.8';
-        this.todos = this.loadTodos();
+        this.version = 'v1.6.0';
+        this.storageManager = new StorageManager();
+        this.todos = [];
         this.currentFilter = 'all';
         this.currentCategory = 'all';
         this.editingId = null;
@@ -25,11 +300,12 @@ class TodoManager {
     }
 
     // Başlangıç fonksiyonu
-    init() {
+    async init() {
         this.bindEvents();
         this.initSortable();
         this.initShortcutsHelp();
         this.initViewMode();
+        await this.loadTodos();
         this.render();
         this.updateStats();
     }
@@ -58,6 +334,32 @@ class TodoManager {
                 this.closeModal();
             }
         });
+
+        // Settings modal events
+        document.getElementById('settingsBtn').addEventListener('click', () => this.openSettingsModal());
+        document.getElementById('settingsCancel').addEventListener('click', () => this.closeSettingsModal());
+        document.querySelector('#settingsModal .modal-close').addEventListener('click', () => this.closeSettingsModal());
+        document.getElementById('settingsSave').addEventListener('click', () => this.saveSettings());
+        
+        // Settings modal dışına tıklama
+        document.getElementById('settingsModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('settingsModal')) {
+                this.closeSettingsModal();
+            }
+        });
+
+        // Storage type değişimi
+        document.querySelectorAll('input[name="storageType"]').forEach(radio => {
+            radio.addEventListener('change', () => this.handleStorageTypeChange());
+        });
+
+        // Supabase config events
+        document.getElementById('testConnection').addEventListener('click', () => this.testSupabaseConnection());
+        document.getElementById('toggleKey').addEventListener('click', () => this.togglePasswordVisibility());
+        
+        // Migration events
+        document.getElementById('migrateData').addEventListener('click', () => this.migrateData());
+        document.getElementById('skipMigration').addEventListener('click', () => this.skipMigration());
 
         // Compact filter butonları
         document.querySelectorAll('.mini-btn[data-filter]').forEach(btn => {
@@ -801,12 +1103,13 @@ class TodoManager {
     }
 
     // Local storage'dan yükle
-    loadTodos() {
+    async loadTodos() {
         try {
-            const saved = localStorage.getItem('glassmorphism-todos');
-            return saved ? JSON.parse(saved) : [];
+            this.todos = await this.storageManager.loadTodos();
+            return this.todos;
         } catch (error) {
             console.error('Todo yükleme hatası:', error);
+            this.todos = [];
             return [];
         }
     }
@@ -940,6 +1243,228 @@ class TodoManager {
             }
         };
         reader.readAsText(file);
+    }
+
+    // Settings Modal Yönetimi
+    openSettingsModal() {
+        const modal = document.getElementById('settingsModal');
+        const currentStorage = this.storageManager.storageType;
+        
+        // Mevcut ayarları yükle
+        document.getElementById(currentStorage).checked = true;
+        this.handleStorageTypeChange();
+        
+        // Supabase config varsa yükle
+        if (currentStorage === 'supabase') {
+            const config = this.storageManager.getSupabaseConfig();
+            document.getElementById('supabaseUrl').value = config.url;
+            document.getElementById('supabaseKey').value = config.key;
+        }
+        
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeSettingsModal() {
+        document.getElementById('settingsModal').style.display = 'none';
+        document.body.style.overflow = '';
+        
+        // Form temizle
+        document.getElementById('connectionStatus').textContent = '';
+        document.getElementById('connectionStatus').className = 'connection-status';
+        document.getElementById('migrationSection').style.display = 'none';
+    }
+
+    handleStorageTypeChange() {
+        const selectedType = document.querySelector('input[name="storageType"]:checked').value;
+        const supabaseConfig = document.getElementById('supabaseConfig');
+        const migrationSection = document.getElementById('migrationSection');
+        
+        if (selectedType === 'supabase') {
+            supabaseConfig.style.display = 'block';
+        } else {
+            supabaseConfig.style.display = 'none';
+        }
+
+        // Migration section'ı storage type değişikliğinde göster
+        if (selectedType !== this.storageManager.storageType) {
+            migrationSection.style.display = 'block';
+        } else {
+            migrationSection.style.display = 'none';
+        }
+    }
+
+    async testSupabaseConnection() {
+        const url = document.getElementById('supabaseUrl').value.trim();
+        const key = document.getElementById('supabaseKey').value.trim();
+        const status = document.getElementById('connectionStatus');
+        const testBtn = document.getElementById('testConnection');
+        
+        if (!url || !key) {
+            status.textContent = 'Lütfen URL ve API anahtarını girin';
+            status.className = 'connection-status error';
+            return;
+        }
+
+        testBtn.disabled = true;
+        status.textContent = 'Bağlantı test ediliyor...';
+        status.className = 'connection-status loading';
+
+        try {
+            const result = await this.storageManager.testSupabaseConnection(url, key);
+            
+            if (result.success) {
+                status.textContent = '✅ Bağlantı başarılı!';
+                status.className = 'connection-status success';
+            } else {
+                status.textContent = `❌ Bağlantı hatası: ${result.error}`;
+                status.className = 'connection-status error';
+            }
+        } catch (error) {
+            status.textContent = `❌ Test hatası: ${error.message}`;
+            status.className = 'connection-status error';
+        } finally {
+            testBtn.disabled = false;
+        }
+    }
+
+    togglePasswordVisibility() {
+        const keyInput = document.getElementById('supabaseKey');
+        const toggleBtn = document.getElementById('toggleKey');
+        const icon = toggleBtn.querySelector('i');
+        
+        if (keyInput.type === 'password') {
+            keyInput.type = 'text';
+            icon.className = 'fas fa-eye-slash';
+        } else {
+            keyInput.type = 'password';
+            icon.className = 'fas fa-eye';
+        }
+    }
+
+    async saveSettings() {
+        const selectedType = document.querySelector('input[name="storageType"]:checked').value;
+        const saveBtn = document.getElementById('settingsSave');
+        
+        try {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Kaydediliyor...';
+
+            if (selectedType === 'supabase') {
+                const url = document.getElementById('supabaseUrl').value.trim();
+                const key = document.getElementById('supabaseKey').value.trim();
+                
+                if (!url || !key) {
+                    throw new Error('Supabase URL ve API anahtarı gerekli');
+                }
+
+                // Bağlantıyı test et
+                const result = await this.storageManager.testSupabaseConnection(url, key);
+                if (!result.success) {
+                    throw new Error(`Supabase bağlantısı başarısız: ${result.error}`);
+                }
+
+                // Config'i kaydet
+                this.storageManager.saveSupabaseConfig(url, key);
+                
+                // Storage type'ı değiştir
+                this.storageManager.setStorageType('supabase');
+                await this.storageManager.initializeSupabase();
+            } else {
+                // LocalStorage'a geçiş
+                this.storageManager.disconnect();
+                this.storageManager.setStorageType('localStorage');
+            }
+
+            this.showNotification('Ayarlar başarıyla kaydedildi!', 'success');
+            this.closeSettingsModal();
+
+            // Verileri yeniden yükle
+            await this.loadTodos();
+            this.render();
+            this.updateStats();
+
+        } catch (error) {
+            this.showNotification(`Ayar kaydetme hatası: ${error.message}`, 'error');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Kaydet';
+        }
+    }
+
+    async migrateData() {
+        const selectedType = document.querySelector('input[name="storageType"]:checked').value;
+        const currentType = this.storageManager.storageType;
+        const migrateBtn = document.getElementById('migrateData');
+        
+        try {
+            migrateBtn.disabled = true;
+            migrateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Aktarılıyor...';
+
+            if (selectedType === 'supabase' && currentType === 'localStorage') {
+                // LocalStorage'dan Supabase'e migration
+                const success = await this.storageManager.migrateToSupabase(this.todos);
+                if (!success) throw new Error('Supabase migration başarısız');
+                
+            } else if (selectedType === 'localStorage' && currentType === 'supabase') {
+                // Supabase'den localStorage'a migration
+                const success = await this.storageManager.migrateToLocalStorage(this.todos);
+                if (!success) throw new Error('LocalStorage migration başarısız');
+            }
+
+            this.showNotification('Veriler başarıyla aktarıldı!', 'success');
+            document.getElementById('migrationSection').style.display = 'none';
+
+        } catch (error) {
+            this.showNotification(`Migration hatası: ${error.message}`, 'error');
+        } finally {
+            migrateBtn.disabled = false;
+            migrateBtn.innerHTML = '<i class="fas fa-upload"></i> Verileri Aktar';
+        }
+    }
+
+    skipMigration() {
+        document.getElementById('migrationSection').style.display = 'none';
+        this.showNotification('Migration atlandı', 'info');
+    }
+
+    // Real-time güncelleme işleyici
+    handleRealtimeUpdate(payload) {
+        console.log('Real-time update:', payload);
+        
+        switch (payload.eventType) {
+            case 'INSERT':
+                this.todos.push(this.convertSupabaseTodo(payload.new));
+                break;
+            case 'UPDATE':
+                const updateIndex = this.todos.findIndex(t => t.id === payload.new.id);
+                if (updateIndex !== -1) {
+                    this.todos[updateIndex] = this.convertSupabaseTodo(payload.new);
+                }
+                break;
+            case 'DELETE':
+                this.todos = this.todos.filter(t => t.id !== payload.old.id);
+                break;
+        }
+        
+        this.render();
+        this.updateStats();
+        this.showNotification('Veriler real-time olarak güncellendi', 'info');
+    }
+
+    // Supabase todo formatını local formata çevir
+    convertSupabaseTodo(supabaseTodo) {
+        return {
+            id: supabaseTodo.id,
+            text: supabaseTodo.text,
+            completed: supabaseTodo.completed,
+            category: supabaseTodo.category,
+            priority: supabaseTodo.priority,
+            dueDate: supabaseTodo.due_date,
+            createdAt: supabaseTodo.created_at,
+            completedAt: supabaseTodo.completed_at,
+            orderIndex: supabaseTodo.order_index
+        };
     }
 }
 

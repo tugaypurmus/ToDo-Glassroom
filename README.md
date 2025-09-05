@@ -1,6 +1,6 @@
 # 🌟 Glassmorphism Todo App
 
-Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir yapılacaklar listesi uygulaması. Desktop mode ile otomatik responsive sidebar navigasyon sistemi.
+Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir yapılacaklar listesi uygulaması. Desktop mode ile otomatik responsive sidebar navigasyon sistemi ve seçmeli depolama sistemi (LocalStorage veya Supabase).
 
 ## ✨ Özellikler
 
@@ -16,8 +16,8 @@ Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir y
 - **Görev Düzenleme**: Mevcut görevleri düzenleme
 - **Görev Silme**: Onay ile güvenli silme
 - **Durum Değiştirme**: Tamamlandı/aktif durumu
-- **Otomatik Kaydetme**: Local storage ile veri saklama
-- **Kategori Sistemi**: 6 farklı kategori desteği
+- **Seçmeli Depolama**: LocalStorage veya Supabase bulut depolama
+- **Kategori Sistemi**: 7 farklı kategori desteği
 - **Öncelik Seviyeleri**: Yüksek/Orta/Düşük öncelik
 - **Due Date**: Görevler için son tarih
 
@@ -37,6 +37,15 @@ Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir y
 - **Drag & Drop**: SortableJS ile görev sıralaması
 - **Modal Interface**: Detaylı görev ekleme sistemi
 - **Smart Categorization**: Akıllı kategori önerisi
+
+### ☁️ Depolama Sistemi
+- **Çifte Depolama**: LocalStorage (offline) ve Supabase (cloud) seçenekleri
+- **Ayarlar Paneli**: Sidebar'dan erişilebilen depolama ayarları
+- **Supabase Konfigürasyonu**: URL ve API key ayarlama
+- **Bağlantı Testi**: Supabase bağlantı doğrulama
+- **Veri Migrasyonu**: LocalStorage ↔ Supabase arası otomatik veri aktarımı
+- **Real-time Güncellemeler**: Supabase ile anlık senkronizasyon
+- **Hibrit Mod**: İstediğiniz zaman depolama türünü değiştirme
 
 ## 🚀 Kurulum
 
@@ -60,10 +69,15 @@ Modern ve şık glassmorphism tasarımı ile yapılmış, tamamen Türkçe bir y
      php -S localhost:8000
      ```
 
-3. **Kullanmaya Başla!**
+3. **Depolama Seçimi (İsteğe Bağlı)**
+   - Sidebar'dan "⚙️ Ayarlar > Depolama Ayarları"na tıklayın
+   - **Yerel Depolama**: Sadece bu cihazda, offline çalışır
+   - **Bulut Depolama**: Supabase ile multi-device sync + real-time
+
+4. **Kullanmaya Başla!**
    - Üst kısımdan yeni görevler ekleyin
    - Filtreleri kullanarak görevlerinizi organize edin
-   - Verileriniz otomatik olarak kaydedilir
+   - Verileriniz seçtiğiniz sisteme otomatik kaydedilir
 
 ## 📱 Kullanım
 
@@ -108,7 +122,9 @@ ToDo-Glassroom/
 - **HTML5**: Semantik yapı
 - **CSS3**: Glassmorphism efektleri, animasyonlar
 - **Vanilla JavaScript**: Modern ES6+ özellikler
-- **Local Storage**: Veri saklama
+- **Storage Manager**: Dinamik depolama sistemi
+- **Supabase JS**: Real-time database ve auth
+- **SortableJS**: Drag & Drop işlevselliği
 - **Font Awesome**: İkonlar
 
 ### Browser Desteği
@@ -158,17 +174,78 @@ ToDo-Glassroom/
 - **JavaScript**: ~15KB
 - **Toplam**: ~31KB (gzipped: ~11KB)
 
-## ✅ Tamamlanan Özellikler (v1.5)
+## 🌟 Supabase Kurulumu (İsteğe Bağlı)
 
+Bulut depolama özelliğini kullanmak için bir Supabase projesi oluşturmanız gerekir:
+
+### 1. Supabase Proje Kurulumu
+1. [Supabase](https://supabase.com) sitesine gidin ve ücretsiz hesap oluşturun
+2. Yeni bir proje oluşturun
+3. SQL Editor'den aşağıdaki tabloyu oluşturun:
+
+```sql
+-- Todos tablosunu oluştur
+CREATE TABLE todos (
+  id BIGSERIAL PRIMARY KEY,
+  text TEXT NOT NULL,
+  completed BOOLEAN DEFAULT false,
+  category TEXT DEFAULT 'genel',
+  priority TEXT DEFAULT 'orta',
+  due_date DATE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  completed_at TIMESTAMP WITH TIME ZONE,
+  order_index INTEGER DEFAULT 0
+);
+
+-- RLS (Row Level Security) politikalarını ayarla
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
+
+-- Herkesi okuma/yazma iznine ekle (demo için - production'da user-based olmalı)
+CREATE POLICY "Enable all access for todos" ON todos
+FOR ALL USING (true) WITH CHECK (true);
+
+-- İndexler oluştur
+CREATE INDEX idx_todos_category ON todos(category);
+CREATE INDEX idx_todos_completed ON todos(completed);
+CREATE INDEX idx_todos_priority ON todos(priority);
+CREATE INDEX idx_todos_order_index ON todos(order_index);
+```
+
+### 2. Uygulama Ayarları
+1. Uygulamayı açın
+2. Sidebar'dan "⚙️ Ayarlar > Depolama Ayarları"na gidin
+3. "☁️ Bulut Depolama"yı seçin
+4. Supabase Project URL'inizi girin (örn: `https://abcdefg.supabase.co`)
+5. Supabase anon/public API key'inizi girin
+6. "Bağlantıyı Test Et" butonuna tıklayın
+7. Başarılı ise "Kaydet" butonuna tıklayın
+
+### 3. Real-time Güncellemeler
+Supabase yapılandırması tamamlandığında:
+- ✅ Anlık senkronizasyon aktif olur
+- ✅ Çoklu cihaz desteği çalışır
+- ✅ Real-time bildirimler gösterilir
+
+## ✅ Tamamlanan Özellikler (v1.6.0)
+
+### v1.6.0 - Seçmeli Depolama Sistemi
+- [x] **Storage Manager**: Dinamik depolama sistemi sınıfı
+- [x] **Supabase Entegrasyonu**: Real-time cloud storage
+- [x] **Ayarlar Paneli**: Depolama türü seçimi ve konfigürasyon
+- [x] **Veri Migrasyonu**: LocalStorage ↔ Supabase otomatik aktarım
+- [x] **Bağlantı Testi**: Supabase konfigürasyon doğrulama
+- [x] **Real-time Senkronizasyon**: Anlık güncelleme sistemi
+
+### v1.5.8 - Core Features
 - [x] **Desktop Mode**: Otomatik responsive sidebar navigasyon
 - [x] **Görünüm Seçici**: Manuel Desktop/Mobile/Auto mod seçimi
-- [x] **Kategori Sistemi**: 6 farklı kategori desteği
+- [x] **Kategori Sistemi**: 7 farklı kategori desteği
 - [x] **Due Date**: Tarih ekleme ve overdue detection
 - [x] **Drag & Drop**: SortableJS ile görev sıralama
 - [x] **Smart UI**: Compact interface ve modal sistem
 - [x] **Klavye Kısayolları**: Otomatik yardım paneli ve görünüm kısayolları
 - [x] **Kalıcı Ayarlar**: Görünüm modu localStorage'da saklanıyor
-- [x] **Beyaz Header**: Header metinleri beyaz renkte
 
 ## 🔄 Gelecek Özellikler
 
@@ -177,7 +254,8 @@ ToDo-Glassroom/
 - [ ] **Export/Import**: JSON backup fonksiyonu
 - [ ] **Görev Notları**: Detaylı açıklama sistemi
 - [ ] **İstatistik Dashboard**: Gelişmiş analitik paneli
-- [ ] **Ses Efektleri**: İnteraksiyon sesleri
+- [ ] **User Authentication**: Supabase Auth ile kullanıcı sistemi
+- [ ] **Paylaşım**: Görev listesi paylaşma özelliği
 
 ## 🤝 Katkıda Bulunma
 

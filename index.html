@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div class="background-animation">
@@ -22,7 +23,7 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2><i class="fas fa-tasks"></i> Todo</h2>
-                <p class="version">v1.5.8</p>
+                <p class="version">v1.6.0</p>
             </div>
             
             <nav class="sidebar-nav">
@@ -118,6 +119,18 @@
                                 <span class="category-emoji">📚</span>
                                 <span>Eğitim</span>
                                 <span class="count" id="sidebarEgitimCount">0</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3>⚙️ Ayarlar</h3>
+                    <ul class="nav-list">
+                        <li>
+                            <button class="nav-item" id="settingsBtn">
+                                <i class="fas fa-cog"></i>
+                                <span>Depolama Ayarları</span>
                             </button>
                         </li>
                     </ul>
@@ -312,6 +325,81 @@
                 <button id="modalCancel" class="btn-secondary">İptal</button>
                 <button id="modalAdd" class="btn-primary">
                     <i class="fas fa-plus"></i> Ekle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content settings-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-cog"></i> Depolama Ayarları</h2>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="storage-options">
+                    <div class="storage-option">
+                        <input type="radio" id="localStorage" name="storageType" value="localStorage" checked>
+                        <label for="localStorage" class="storage-label">
+                            <div class="storage-header">
+                                <i class="fas fa-hdd"></i>
+                                <h3>🏠 Yerel Depolama</h3>
+                            </div>
+                            <p>Verileriniz sadece bu cihazda saklanır. Offline çalışır, senkronizasyon yok.</p>
+                        </label>
+                    </div>
+                    
+                    <div class="storage-option">
+                        <input type="radio" id="supabase" name="storageType" value="supabase">
+                        <label for="supabase" class="storage-label">
+                            <div class="storage-header">
+                                <i class="fas fa-cloud"></i>
+                                <h3>☁️ Bulut Depolama</h3>
+                            </div>
+                            <p>Verileriniz bulutta saklanır. Cihazlar arası senkronizasyon ve real-time güncellemeler.</p>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="supabaseConfig" class="supabase-config" style="display: none;">
+                    <h4><i class="fas fa-database"></i> Supabase Konfigürasyonu</h4>
+                    <div class="form-group">
+                        <label>Proje URL'si</label>
+                        <input type="url" id="supabaseUrl" placeholder="https://xxxxxxxx.supabase.co">
+                    </div>
+                    <div class="form-group">
+                        <label>API Anahtarı (anon/public)</label>
+                        <input type="password" id="supabaseKey" placeholder="Supabase API anahtarınızı girin">
+                        <button type="button" id="toggleKey" class="toggle-key-btn">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="config-actions">
+                        <button id="testConnection" class="btn-secondary">
+                            <i class="fas fa-wifi"></i> Bağlantıyı Test Et
+                        </button>
+                        <div id="connectionStatus" class="connection-status"></div>
+                    </div>
+                </div>
+
+                <div id="migrationSection" class="migration-section" style="display: none;">
+                    <h4><i class="fas fa-exchange-alt"></i> Veri Aktarımı</h4>
+                    <p>Mevcut verilerinizi yeni depolama sistemine aktarmak istiyor musunuz?</p>
+                    <div class="migration-actions">
+                        <button id="migrateData" class="btn-primary">
+                            <i class="fas fa-upload"></i> Verileri Aktar
+                        </button>
+                        <button id="skipMigration" class="btn-secondary">
+                            <i class="fas fa-times"></i> Atla
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="settingsCancel" class="btn-secondary">İptal</button>
+                <button id="settingsSave" class="btn-primary">
+                    <i class="fas fa-save"></i> Kaydet
                 </button>
             </div>
         </div>

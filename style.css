@@ -1180,6 +1180,10 @@ body.force-desktop .app-container {
     animation: modalSlideIn 0.3s ease;
 }
 
+.settings-modal {
+    max-width: 600px;
+}
+
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -1511,6 +1515,205 @@ body.force-desktop .app-container {
         opacity: 0;
         transform: scale(0.8);
     }
+}
+
+/* Settings Modal Styles */
+.storage-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.storage-option {
+    position: relative;
+}
+
+.storage-option input[type="radio"] {
+    display: none;
+}
+
+.storage-label {
+    display: block;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.storage-label:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.storage-option input[type="radio"]:checked + .storage-label {
+    background: rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.4);
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.2);
+}
+
+.storage-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.storage-header h3 {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.storage-header i {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 20px;
+}
+
+.storage-label p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.supabase-config {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.supabase-config h4 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.supabase-config .form-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.supabase-config .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.supabase-config label {
+    display: block;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.supabase-config input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    color: white;
+    font-size: 14px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.supabase-config input:focus {
+    outline: none;
+    border-color: rgba(76, 175, 80, 0.5);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.2);
+}
+
+.supabase-config input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.toggle-key-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.3s ease;
+}
+
+.toggle-key-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.config-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.connection-status {
+    flex: 1;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.connection-status.success {
+    color: #4caf50;
+}
+
+.connection-status.error {
+    color: #f44336;
+}
+
+.connection-status.loading {
+    color: #ff9800;
+}
+
+.migration-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.migration-section h4 {
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.migration-section p {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin: 0 0 15px 0;
+    line-height: 1.4;
+}
+
+.migration-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .fade-out {
