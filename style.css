@@ -7,7 +7,11 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(120, 220, 232, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(186, 85, 211, 0.3) 0%, transparent 50%),
+        linear-gradient(135deg, #0f0c29 0%, #03001e 35%, #24243e 100%);
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
@@ -27,9 +31,16 @@ body {
 .bubble {
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    animation: float 20s infinite linear;
+    background: linear-gradient(135deg, 
+        rgba(120, 220, 232, 0.15) 0%, 
+        rgba(255, 182, 193, 0.15) 50%, 
+        rgba(186, 85, 211, 0.15) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: float 25s infinite linear;
+    box-shadow: 
+        0 8px 32px 0 rgba(120, 220, 232, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .bubble-1 {
@@ -94,20 +105,44 @@ body {
     gap: 20px;
 }
 
-/* Glassmorphism Card Stili */
+/* Enhanced Glassmorphism Card Stili */
 .glass-card {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.1) 0%, 
+        rgba(255, 255, 255, 0.05) 100%);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
     padding: 30px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 25px 45px rgba(0, 0, 0, 0.1),
+        0 15px 35px rgba(120, 220, 232, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        transparent 100%);
 }
 
 .glass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 
+        0 35px 65px rgba(0, 0, 0, 0.15),
+        0 25px 50px rgba(120, 220, 232, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 /* Header Stili */
@@ -267,7 +302,9 @@ body {
     padding: 15px 25px;
     border: none;
     border-radius: 50px;
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    background: linear-gradient(135deg, 
+        rgba(120, 220, 232, 0.8) 0%,
+        rgba(186, 85, 211, 0.8) 100%);
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -275,67 +312,119 @@ body {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+    box-shadow: 
+        0 8px 25px rgba(120, 220, 232, 0.25),
+        0 4px 15px rgba(186, 85, 211, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+.add-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+    transition: left 0.5s ease;
+}
+
+.add-btn:hover::before {
+    left: 100%;
 }
 
 .add-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 
+        0 12px 35px rgba(120, 220, 232, 0.35),
+        0 8px 25px rgba(186, 85, 211, 0.25);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .add-btn:active {
-    transform: scale(0.95);
+    transform: translateY(-1px) scale(0.98);
 }
 
-/* Filtre Butonları */
+/* Minimal Filtre Tasarımı */
 .filters {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
+    align-items: center;
 }
 
-.filter-group {
+.filter-tabs {
     display: flex;
-    gap: 10px;
-    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    padding: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.tab-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.tab-btn.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-chips {
+    display: flex;
+    gap: 8px;
     flex-wrap: wrap;
     justify-content: center;
 }
 
-.filter-label {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 14px;
-    font-weight: 600;
-    margin-right: 10px;
-    min-width: 60px;
-}
-
-.filter-btn {
-    padding: 12px 20px;
+.chip {
+    width: 36px;
+    height: 36px;
     border: none;
-    border-radius: 25px;
+    border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     color: rgba(255, 255, 255, 0.8);
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 14px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    border: 1px solid transparent;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.filter-btn:hover {
+.chip:hover {
     background: rgba(255, 255, 255, 0.2);
-    color: white;
-    transform: translateY(-1px);
+    transform: scale(1.05);
 }
 
-.filter-btn.active {
-    background: linear-gradient(45deg, #4facfe, #00f2fe);
-    color: white;
+.chip.active {
+    background: rgba(255, 255, 255, 0.25);
     border-color: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
 }
 
 /* Todo Liste Bölümü */

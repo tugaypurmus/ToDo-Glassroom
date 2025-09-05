@@ -1,6 +1,7 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
+        this.version = 'v1.1';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
@@ -39,12 +40,12 @@ class TodoManager {
         });
 
         // Durum filtre butonları
-        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+        document.querySelectorAll('.tab-btn[data-filter]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
         });
 
         // Kategori filtre butonları
-        document.querySelectorAll('.category-filter').forEach(btn => {
+        document.querySelectorAll('.chip[data-category]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setCategoryFilter(e.target.dataset.category));
         });
 
@@ -212,10 +213,10 @@ class TodoManager {
         this.currentFilter = filter;
         
         // Aktif filtre butonunu güncelle
-        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+        document.querySelector(`.tab-btn[data-filter="${filter}"]`).classList.add('active');
         
         this.render();
     }
@@ -225,10 +226,10 @@ class TodoManager {
         this.currentCategory = category;
         
         // Aktif kategori filtre butonunu güncelle
-        document.querySelectorAll('.category-filter').forEach(btn => {
+        document.querySelectorAll('.chip').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        document.querySelector(`.chip[data-category="${category}"]`).classList.add('active');
         
         this.render();
     }
@@ -595,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.todoManager = new TodoManager();
     
     // Konsol mesajı
-    console.log('🌟 Glassmorphism Todo App başarıyla yüklendi!');
+    console.log(`🌟 Glassmorphism Todo App ${window.todoManager.version} başarıyla yüklendi!`);
     console.log('📊 İstatistikler için: todoManager.getStats()');
     console.log('💾 Dışa aktarmak için: todoManager.exportTodos()');
 });
