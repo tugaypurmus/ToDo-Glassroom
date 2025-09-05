@@ -298,11 +298,11 @@ body.force-desktop .app-container {
 .mobile-controls {
     display: none;
     position: fixed;
-    bottom: 20px;
+    bottom: 90px;
     right: 20px;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     z-index: 200;
 }
 
@@ -310,7 +310,6 @@ body.force-desktop .app-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: 5px;
 }
 
 .mobile-view-icon {
