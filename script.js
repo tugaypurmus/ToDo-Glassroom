@@ -1,11 +1,12 @@
 // Todo Yönetici Sınıfı
 class TodoManager {
     constructor() {
-        this.version = 'v1.4';
+        this.version = 'v1.5';
         this.todos = this.loadTodos();
         this.currentFilter = 'all';
         this.currentCategory = 'all';
         this.editingId = null;
+        this.currentView = this.loadViewMode();
         this.categories = {
             'genel': { icon: '📋', name: 'Genel', color: '#667eea' },
             'is': { icon: '💼', name: 'İş', color: '#4facfe' },
@@ -28,6 +29,7 @@ class TodoManager {
         this.bindEvents();
         this.initSortable();
         this.initShortcutsHelp();
+        this.initViewMode();
         this.render();
         this.updateStats();
     }
@@ -73,6 +75,11 @@ class TodoManager {
         });
         document.querySelectorAll('.category-nav[data-category]').forEach(btn => {
             btn.addEventListener('click', (e) => this.setSidebarCategory(e.target.closest('.category-nav').dataset.category));
+        });
+
+        // View Toggle Navigation
+        document.querySelectorAll('.view-toggle[data-view]').forEach(btn => {
+            btn.addEventListener('click', (e) => this.setViewMode(e.target.closest('.view-toggle').dataset.view));
         });
 
         // Todo listesi event delegation
@@ -651,6 +658,64 @@ class TodoManager {
             const countEl = document.getElementById(id);
             if (countEl) countEl.textContent = count;
         });
+    }
+
+    // View Mode Functions
+    loadViewMode() {
+        return localStorage.getItem('todoAppViewMode') || 'auto';
+    }
+
+    saveViewMode() {
+        localStorage.setItem('todoAppViewMode', this.currentView);
+    }
+
+    initViewMode() {
+        this.applyViewMode();
+        this.updateViewButtons();
+    }
+
+    setViewMode(view) {
+        this.currentView = view;
+        this.saveViewMode();
+        this.applyViewMode();
+        this.updateViewButtons();
+        this.showNotification(`Görünüm modu: ${this.getViewDisplayName(view)}`, 'success');
+    }
+
+    applyViewMode() {
+        const body = document.body;
+        
+        // Mevcut sınıfları temizle
+        body.classList.remove('force-mobile', 'force-desktop');
+        
+        // Yeni sınıfı uygula
+        if (this.currentView === 'mobile') {
+            body.classList.add('force-mobile');
+        } else if (this.currentView === 'desktop') {
+            body.classList.add('force-desktop');
+        }
+        // 'auto' için hiçbir sınıf eklenmez, responsive CSS devreye girer
+    }
+
+    updateViewButtons() {
+        document.querySelectorAll('.view-toggle').forEach(btn => {
+            const isActive = btn.dataset.view === this.currentView;
+            btn.classList.toggle('active', isActive);
+            
+            const indicator = btn.querySelector('.view-indicator');
+            if (indicator) {
+                indicator.classList.toggle('active', isActive);
+            }
+        });
+    }
+
+    getViewDisplayName(view) {
+        const names = {
+            'auto': 'Otomatik',
+            'desktop': 'Desktop',
+            'mobile': 'Mobil'
+        };
+        return names[view] || view;
     }
 
     // Todo list click handler

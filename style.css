@@ -205,6 +205,42 @@ body {
     background: rgba(255, 255, 255, 0.25);
 }
 
+/* Mobile Header */
+.mobile-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.mobile-header h1 {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-header p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin: 0;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* View Toggle Styles */
+.view-toggle {
+    position: relative;
+}
+
+.view-indicator {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.view-toggle.active .view-indicator {
+    color: #4facfe;
+    text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+}
+
 /* Main Content Container */
 .main-container {
     flex: 1;
@@ -216,20 +252,62 @@ body {
     min-height: 100vh;
 }
 
-/* Mobile Layout */
+/* Forced View Modes */
+body.force-mobile .sidebar {
+    display: none !important;
+}
+
+body.force-mobile .main-container {
+    margin-left: 0 !important;
+    max-width: 800px !important;
+    margin: 0 auto !important;
+}
+
+body.force-mobile .app-container {
+    display: block !important;
+}
+
+body.force-desktop .sidebar {
+    display: block !important;
+}
+
+body.force-desktop .main-container {
+    margin-left: 280px !important;
+}
+
+body.force-desktop .app-container {
+    display: flex !important;
+}
+
+/* Mobile Layout (Auto Mode) */
 @media (max-width: 1024px) {
-    .sidebar {
+    body:not(.force-desktop) .sidebar {
         display: none;
     }
     
-    .main-container {
+    body:not(.force-desktop) .main-container {
         margin-left: 0;
         max-width: 800px;
         margin: 0 auto;
     }
     
-    .app-container {
+    body:not(.force-desktop) .app-container {
         display: block;
+    }
+}
+
+/* Desktop Layout (Auto Mode) */
+@media (min-width: 1025px) {
+    body:not(.force-mobile) .sidebar {
+        display: block;
+    }
+    
+    body:not(.force-mobile) .main-container {
+        margin-left: 280px;
+    }
+    
+    body:not(.force-mobile) .app-container {
+        display: flex;
     }
 }
 
